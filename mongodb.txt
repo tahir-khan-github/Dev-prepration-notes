@@ -1,0 +1,706 @@
+Mongodb -> its a db server where we can create lots of dbs, its schema less(no structure like table) so we need to manage a level of schema at application level
+           and its highly scalable
+            table -> collection
+            row -> documents
+Documnets -> data in the form of json
+            employee :
+            {
+              "name":"tahir"
+              "addr":"noida"
+              "identity":{ //another document
+                "adhar":"asdasd"
+                "pan":"asdasd"
+              }
+            }
+1)Less relations 
+2)data is stored together
+          :-  In mysql different entities are stored in different tables and if we want some data related to diff entities, 
+                    then we need to write quries using join 
+                    But in mongodb all data related a collection is put together and hence query becomes fast & easy 
+3)BSON :- for user data is stored in JSON format but in MDB it stored in BSON(binary representation of json) so that its traversal gets fast
+
+Each document has size liimit of 16mb and documents can be nested upto 100 levels
+-------------------------
+
+Crud opreation 
+1)create -> insertOne(data, option) , insertMany(data, option)
+       Queries : 
+          a)db.students.insertOne({name:"Ram",age:24}) insert single document
+          b)db.students.insertMany([{name:"Shyam",age:24},{name:"Aman",age:34}]) insert Many  documents
+          ---------options-----------
+          c)db.students.insertMany([{_id:"A", name:"A", age:1},{_id:"B", name:"B",age:2},{_id:"A", name:"C",age:3},{_id:"D", name:"D",age:4}])
+              what will happen is at 3rd document it will give error of duplicate Id and it will not insert as well as all the document will not enter after that
+              but if we want to enter remaning document even at an error we use ordered
+            db.students.insertMany([{_id:"A", name:"A", age:1},{_id:"B", name:"B",age:2},{_id:"A", name:"C",age:3},{_id:"D", name:"D",age:4}],{ordered:false})
+        
+          d)db.students.insertOne({name:"Ram",age:24},{writeConcern:{w:0/1, j:true/false, wtimeOut:100000}})
+              w-> acknowledgement
+              j -> journal , db will check what it has to do if write opreation restarts some how
+              wtimeOut -> timeout time for an operation
+
+2)read ->  findOne(filter, option) , find(filter, option)
+      Queries : 
+          a)db.students.findOne({name:"Ram"}) return a single document
+          b)db.students.find({name:"Ram"}) return a list of document on which we can iterate (.count, .forEach((x)=>{}))
+          c)db.students.find({age:12}) return list of documents having age 12
+              db.students.find({age:{$lt:12}}) return list of documents having age less than 12
+              db.students.find({age:{$gt:5, $lt:10}}) return list of documents having age b/w 5 and 10 
+          d)db.students.find({'idCard.hasPanCard':true}) searching nested document  //key.key in a quotes
+          ----------options------------
+          e)db.students.find({},{name:1, _id:0,age:0}) projection or select a specified cloumn to be displayed
+          ---------operators----------
+                1)Comparison operators:
+                  find({age:{$eq:5}}) equal to
+                  find({age:{$ne:5}}) not equal to
+                  find({age:{$lt:5}}) less than
+                  find({age:{$lte:5}}) less than & equal
+                  find({age:{$gt:5}}) greater than
+                  find({age:{$gte:5}}) greater than and equal
+                  find({age:{$gt:5, $lt:10}}) in b/w range
+                  find({age:{$in:[5,11,12]}}) age including these values
+                  find({age:{$nin:[5,11,12]}}) age not-including these values
+                
+                2)logical operator:
+                   find({$or:[{age:{$lte:10}},{age:{$gte:12}}]}) or 
+                   find({$nor:[{age:{$lte:10}},{age:{$gte:12}}]}) nor
+                   find({$and:[{age:{$lt:10}},{hobbies:'walk'}]}) and
+                   find({age:{$not:{$gt:5}}}) not
+
+                3)exist and type operator 
+                    find({hasmac:{$exists:true, $type:8}})   
+                
+                4)evaluation operator
+                  a)$expr - expression operator which takes and arithmatic expression and return evaluated values 
+                      db.collection.find({$expr:{$gt:["$price", {$avg:"$price"}]}}) return weher value of price field is greater than average value of price field
+                  b)$regex - used for regular expression
+                      db.collection.find({name:{$regex: /*A/}}) return where name starts with A
+                  c)$text - performs text search , but we need to create text index on the field we want to search
+                      db.students.createIndex({bio:"text", hobbies:"text"})
+                      db.students.find({$text:{$search:"youtube"}}) it will search in all the fileds which have text indexing
+                  d)$mod - return devided values
+                      db.students.find({age:{$mod:[2,0]}}) returns all documents whose age is devided by 2
+
+3)update -> updateOne(filter, data, option) , updateMany(filter, data, option) , replaceOne(filter, data, option)
+        Queries : 
+          a) db.students.updateOne({name:"Ram"},{$set:{idCard:{hasPanCard: true, hasAdharcard: true}}} this will update the field if it already exist otherwise it will create new one
+          b)  db.students.updateMany({},{$set:{hobbies:['cooking','gaming']}}) update all documents in a collection
+          c) db.students.updateMany({age:12},{$set:{age:13}}) update many but only those having age 12
+          ---------options-----------------
+          d) db.students.updateMany({name: "golu" }, {$set:{age:13}, {upsret: true}}) if filter doesn't match then insert new document
+          ---------operator---------------
+          e)b.students.updateMany({}, {$inc:{age:2}}) increment the age by 2 
+          f)b.students.updateMany({}, {$inc:{age:-2}}) decrement the age by 2 
+          g)db.students.updateOne({name:"sita"} , {$max:{age:50}})  increase age of sita, only if age is lesser than 50
+          h)db.students.updateOne({name:"sita"} , {$mul:{age:2}}) multiply age by 2
+          i)db.students.updateOne({name:"sita"} , {$unset:{age:2}}) will remove the field
+          j)db.students.updateOne({name:"sita"} , {$rename:{age: "newAge"}}) will rename the field
+
+
+
+ 
+4)delete -> deleteOne(filter, options) , deleteMany(filter, options)
+       Queries : 
+          a)db.students.deleteOne({name:"abcd"}) delete a document with name as abcd
+          b)db.students.deleteMany({age:13}) delete many documents having age 13  
+          c)db.students.deleteMany({}) delete all documents
+
+5)deleting database
+    a)db.drop() will delete all collection
+    b)db.collection.drop() will drop a specified collection
+
+Datatypes:-
+1)Text - string
+2)Boolean 
+3)Number
+    a)Integer -32bit
+    b)NumberLong -64bit
+    c)NumberDecimal - decimal
+4)ObjectId - mongodb create this automatically
+5)ISODate - for date
+6)TimeStamp - for storing time in milliseconds
+7)array 
+8)Embdocument - nested document
+
+
+Schema Validation:-
+1)adding validation
+
+db.createCollection("students",{
+  validator:{
+    required:['name','age'],
+    properties:{
+      name:{
+        bsontype:string,
+        discription:"name should be a string"
+      },
+      age:{
+        bsontype:number,
+        discription:"age should be a number"
+      },
+    }
+  },
+  validateActions:'error'
+})
+
+2)Modifying existing validation
+
+db.runCommand({
+  colMod:"students",
+  validator:{
+    $jsonSchema:{
+        required:['name','age', 'authors'],
+        properties:{
+          name:{
+            bsontype:'string',
+            description:"name should be a string"
+          },
+          age:{
+            bsontype:'number',
+            description:"age should be a number"
+          },
+          authors:{
+            bsontype:'array',
+            description:"authors should be an array",
+            item:{
+              bsontype:'object',
+              descriptiom:"items should be an object",
+              requried:['name','age']
+              properties:{
+                name:{
+                  bsontype:'string',
+                  description:"name should be a string"
+                },
+                age:{
+                  bsontype:'number',
+                  description:"age should be a number"
+                },
+              }
+            }
+          }
+        }
+    }
+  },
+})
+
+----------------------------------------------------------------
+Atomicity in Mongodb:-
+    Atomicity in mongodb will only happen at a document level , means if crud operation is happening on a single document , 
+    either it will complete or it will not complete
+    But in case of many documents if many documents getting inserted or .. and db stops somehow then document before shut down is empacted
+    and rest will not and there is no roll back in case of many documents crud 
+
+    If we want to achieve rollback in case of many documents this can happen using transactions
+
+------------------------------------------------------------------
+Indexing :-
+in normal find/search COLLSCAN wroks it checks for each document
+if indexing is done IXSCAN will work(it scan like binary search) , if we do indexing on a collection field a seperate B-tree(data structure) will be created and 
+field values will be stored in it, in a sorted manner along with a pointer of that document 
+IXSCAN will work on B-TREE not on collection
+
+drawback - 
+1)storage
+2)on inserting new document , a new indexing will be added in the B-Tree for that document beoz of which sort will happen again - write peroformance downgrade
+
+types of indexing:-
+1)single field indexes
+    db.collection.createIndex({age:1}) indexing on age field and store in asscending order
+    db.collection.getindexs() // to get all indexes
+    db.collection.dropIndex("age_1")
+
+2)compound indexes
+   db.collection.createIndex({age:1, gender:1}) // age_1_gender_1 (sort on age , if age same sort on gender)
+   
+   db.collection.find({age:{$gte:3}, gender:"male"}) //index scan
+   db.collection.find({age:{$gte:3}}) //index scan
+   db.collection.find({ gender:"male"}) //coll scan , order matters
+
+3)multi key indexing //apply on arrays
+   db.collection.createIndex({experience:1}) // but this storage consuming as index will be created for each array value which are unique
+
+4)text indexes
+text index per collection is only one, tokenization and stampigg(convert string into array and convert word into singular), performance score
+we can add multiple fields to single text index
+
+  db.collection.createIndex({bio:"text", description:"text"})
+  db.collection.find({$text:{$search:"youtube"}})
+  db.collection.find({$text:{$search:"youtube"}, {weight:{name:1000, bio:1}}}) we can set priority via this
+
+  //options in indexing
+
+->partialFiltering :
+     db.collection.createIndex({age:1}, {partialFilterExpression:{ age: {$gte:10} }}) // indexing will done only on documents having age > 10 (saves B-Tree storage)
+
+->expiresAfterSeconds :
+        db.collection.createIndex({age:1}, {expiresAfterSeconds: 10000}) index will expore (works on single and date field)
+
+->Covered query :
+all fields in the query are part of index, all fields returned in the query are in same index (its fast as IXSCAN will look into B_Tree)
+      db.collection.find({name:"abc"}, {_id:0, name:1}) search for name and return only name
+
+
+-> winning plan :-
+In case of multiple indexes Mdb comapre indexes by running few documents and stores the result in the cache, 
+so next time similar type query gets called it will used faster index for search
+
+->collection gets blocked if index starts getting created 
+    db.collection.createIndex({bio:"text", description:"text"}, {background: true}) // this unblock the collection only query related to indexing will be blocked
+
+
+-------------------------------------------------------------------------
+Aggregation :-
+concept in which mulitple queries will work in sequence(one after another) 1st result -> 2nd query , 2nd result -> 3rd query
+db.collection.aggregate(pipeline) pipeline - array of different operations
+
+
+db.collection.aggregate([ {$match:{ gender: "male" }} ]) return document with gender as male
+db.collection.aggregate([ {$group: { _id:"$age", }  } ]) return group document by age containing _id, $age reperesents field and not string value
+db.collection.aggregate([ {$group: { _id:"$age", names: { $push:"$name" } }  } ]) return group document by age containing _id and names arry
+db.collection.aggregate([ {$group: { _id:"$age", pooraDocs: { $push:"$$ROOT" } }  } ]) return group document by age containing _id and pooraDocumnt arry containig full details
+db.collection.aggregate([ {$match:{ gender: "male" }}, { $group : { _id:"$age", count: {$sum: 1} } }])  return the count of documents who are male and are of same age 
+db.collection.aggregate([{ $match: { gender: "male" } }, { $group : { _id:"$age" , count: { $sum  : 1 } } } , { $sort: {count: -1} }]) return count of male teacher of same group in sorted order
+db.collection.aggregate([{ $group: {_id:"$age" , hobbies: {$push:"Hobbies"}} }]) return hobbies of students based on the age but this gives nested array
+db.collection.aggregate([ {$unwind: "Hobbies"} ,{ $group: {_id:"$age" , hobbies: {$push:"Hobbies"}} }]) return hobbies of students based on the age in single array
+$unwind -> will create copies of same document based on its hobbies, ["walk", "read"] -> {_id: "abc", hobbies:"walk"}, {_id: "abc", hobbies:"read"}
+db.collection.aggregate([ {$unwind: "Hobbies"} ,{ $group: {_id:"$hobbies" , count: {$sum: 1}} }]) return number of students based on the hobbies
+db.collection.aggregate([ {$unwind: "Hobbies"} ,{ $group: {_id: null , count: {$sum: 1}} }]) return total number of hobbies of all student
+db.collection.aggregate([ {$unwind: "Hobbies"} ,{ $group: {_id: null , count: {$sum: $ifNull:[ "hobbies", [] ]}} }]) return total number of hobbies of all student but some cannot have hobbies field
+
+->$filter:{ input:<arr expression>, as:<identifier>, cond:<expression> }
+  db.collection.aggregate([{$group:{_id: null, average:{$avg:{ $filter:{ input:"$scores", as:"score", cond: {$gt:["$age", 20]} } }}}}])  return average score of students whose age is more than 20
+
+------------------------------------------------------------------------
+Join :-
+combinig two tables/collection into one
+types -> left outer join, right outer join, inner join, full outer join
+
+->$lookup:{ form:"", localField: "", foreignField: "", as: "" } return left outer join values
+
+1)db.cust.aggregate([{$lookup:{ from:"order", localField: "_id", foreignField: "order_id", as: "Orders" }}]) // left outer join
+2)db.order.aggregate([{$lookup:{ from:"cust", localField: "order_id", foreignField: "_id", as: "Customers" }}]) //right outer join
+3)db.cust.aggregate([{$lookup:{ from:"order", localField: "_id", foreignField: "order_id", as: "Orders" }},  {$match: {"Orders": { $ne: [] }}} ]) // inner join
+
+->$project - similar to find options , $project:{//fileds name to be included(1)/excluded(0), renaming, expressions on existing field}
+db.collection.aggregate([{$project:{_id:0, name:1, dept:"$department", annualSalary:{ multiply:["$salary", 12] }}}]) //return document without id and with name, with change field name as dept, and annualSalary w=by applying expression
+
+4)full outer join
+    db.cust.aggregate([ {$lookup:{from "order", localField: "_id", foreignField: "cust_id" , as: "orderDetails"}}, //left outer join
+                        {$unionWith:{ coll:"order", pipeline:[ {$lookup: {from:"cust", localField:"cust_id", foreignField: "_id", as: "Customer" } }, {$match:{$Customer:{$eq:[]}}} ] }} //union with right outer join with avoiding same field
+     ])
+
+cust = [ 
+  {
+    _id:1,
+    name:"abc",
+  } ,
+    {
+    _id:2,
+    name:"def",
+  } ,
+  {
+    _id:3,
+    name:"ghi",
+  } ,
+  ]
+
+order =  [ 
+  {
+    _id:11,
+    products:"abc",
+    cust_id: 1
+  } ,
+    {
+    _id:22,
+    products:"def",
+    cust_id: 2
+  } ,
+  {
+    _id:33,
+    products:"ghi",
+    cust_id: 5
+  } ,
+  ]
+result :
+ left outer join - [ 
+  {
+    _id:1,
+    name:"abc",
+    orderDetails:[
+          {   
+          _id:11,
+            products:"abc",
+            cust_id: 1
+         }
+      ]
+  } ,
+    {
+    _id:2,
+    name:"def",
+    orderDetails:[
+          {
+            _id:22,
+            products:"def",
+            cust_id: 2
+          }
+      ]
+  } ,
+  {
+    _id:3,
+    name:"ghi",
+    orderDetails:[]
+  } ,
+  ]
+
+ right outer join with match- [ 
+ /*** {
+    _id:11,
+    products:"abc",
+    cust_id: 1,
+    Customers: [
+      {
+        _id:1,
+        name:"abc",
+      }
+    ]
+  } ,
+    {
+    _id:22,
+    products:"def",
+    cust_id: 2,
+    Customers: [
+      {
+        _id:2,
+        name:"def",
+      }
+    ]
+  } , ***/
+  {
+    _id:33,
+    products:"ghi",
+    cust_id: 5,
+    Customers: [ ]
+  } ,
+  ]
+
+  union value - 
+  [ 
+  {
+    _id:1,
+    name:"abc",
+    orderDetails:[
+          {   
+          _id:11,
+            products:"abc",
+            cust_id: 1
+         }
+      ]
+  } ,
+    {
+    _id:2,
+    name:"def",
+    orderDetails:[
+          {
+            _id:22,
+            products:"def",
+            cust_id: 2
+          }
+      ]
+  } ,
+  {
+    _id:3,
+    name:"ghi",
+    orderDetails:[]
+  },
+  {
+    _id:33,
+    products:"ghi",
+    cust_id: 5,
+    Customers: [ ]
+  } 
+  ]
+
+------------------------------------------------------------------------
+Capped collection :- collection in which older data gets removed automatically when ever max or size reached
+db.collection.createCollection("coll_name", { capped: true, max:4, size:10000 })
+
+-----------------------------------------------------------------------
+Replication and sharing
+Replication - duplicating the data of 1 server onto another, duplicating operation is asyncrones becoz we want to prioritize Crud
+              ,fault tolerence increased, performance increase as if one server is busy , remaning operation can be performed on another duplicate server
+Sharding -  is a method for distributing data across multiple machines
+
+
+
+-> there are 2 types of scalling 
+1)vertical scalling - eg: trying to increase the same machine storage, but at some point of time it has a liimit
+2)horizontal scaling - distributing data across multiple machines 
+-----------------------------------------------------------------------
+Transactions - set of operations that are performed as a single, means if one failes rest will rollback, transactions are desihned to provide ACID properties
+ACID
+Atomicity - Transaction is treated as single entity, all the operations in it either gets completed or none of them will be completed
+Consistency - before and after transaction state should be valid, constraints(a unique field no duplicacy)  should be remained there before and after, referncing(doc referencing to a doc in another collection) also need to be there before and after
+Isolation - each transaction operates independently of other transactions
+              whenever a transaction starts a lock is established, once transaction gets comitted and lock is released only then new transaction will start
+Durability - it guaranties that once transaction gets completed then changes are permenantly stored and can be retrieved in case of failure or crash, comitted transaction is stored in disk or persistent storage 
+
+-> Replication is crucial to maintain Consistency and Durability.
+
+  var session = db.getMongo().startSession();
+
+  session.startTransaction();
+
+  var cust = session.getDatabase("bank").cust;
+
+  cust.updateOne({_id:1}, {$inc:{bal:-100}})
+
+  cust.updateOne({_id:2}, {$inc:{bal: 100}})
+
+  session.commitTransaction() // session.abortTransaction();
+
+  session.endSession();
+
+-----------------------------------------------------------------------
+Queries on arrays :-
+
+1)Students who have experience in amazon ?
+  db.students.find({'experience.company':"amazon"})
+
+2)how many students who worked in spotify ?
+    db.students.find({'experience.company': "spotify"}).size();
+
+3)how many students who have worked in 3 companies ?
+    db.students.find({experience:{$size:3}}).count()
+
+4)how many students who have worked in more than 3 companies ?
+    db.students.find({$expr:{$gte:[{$size:"$experience"},3]}})
+ 
+5)how many students whose hobbies are walk and read  ?
+    db.students.find({hobbies:{$all:["walk","read"]}})  //$all is an operator that returns documents where the value of a field is an array that contains all the specified elements
+      $in vs $all (in - will return if any value matches, all - will only return if all specified values matches )
+
+6)how many students who are working in amazon and has salary greater than 1001 ?
+    db.students.find({experience:{$elemMatch:{company:"amazon", salary: {$gt:1001}}}})
+
+7)sort students working in amazon based on salary and if salary same then sort on name
+  db.students.find({'experience.company':"amazon"}).sort({salary:1, name:1})
+
+  -------updatig array------
+
+8)for all having duration lesser than 2 add new field neglect:true to first matched element of an array
+  db.students.updateMany({experience:{$elemMatch:{duration:{$lt:2}}}, {$set:{'experience.$.neglect': true}}})
+.
+9) add new field neglect:true to all element of experience array
+  db.students.updateMany({}, {$set:{'experience.$[].neglect': true}}})  
+
+10)for all having exprience lesser than 2 add new field neglect:true 
+  db.students.updateMany({experience:{$elemMatch:{duration:{$lt:2}}}, {$set:{'experience.$[e].neglect': true}, {arrayFilters: [ {'e.duration': {$lt:2}} ]}}})
+
+11)add new document in the experience array of Ram
+    db.students.updateOne({name: "Ram"}, {$push:{experience:{company:"paytm", duration:1, salary: 1001}}})
+
+12)add new document in the experience array of Ram but avoid redundancy
+    db.students.updateOne({name: "Ram"}, {$addToSet:{experience:{company:"paytm", duration:1, salary: 1001}}})
+
+13)remove a document in the experience array of Ram
+     db.students.updateOne({name: "Ram"}, {$pull:{experience:{company:"paytm", duration:1, salary: 1001}}})
+
+14)remove a document in the experience array of Ram from top and bottom
+     db.students.updateOne({name: "Ram"}, {$pop:{experience: 1}}) // bottom
+     db.students.updateOne({name: "Ram"}, {$pop:{experience: -1}}) // top
+
+model creation >>>
+
+const schema = new Schema({
+    name:{
+        type: String,
+        required: true,
+    },
+    username: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    password: {
+        type: String,
+        requried: true
+         select: false ->  so that get api will not show/select this attribute
+    }
+},
+{
+    timestamps: true // automatic created at
+}
+);
+
+export const User = models.User || model("User",schema);
+
+2)referencing to another colletion
+members is of type [ObjectId] and containing reference for User schema, so on finding chats containing userid it will show chats
+ with members containing userid but on using populate it will show User collection
+  and if pass fields then only defined User fields will be shown
+
+    members: [
+      {
+        type: Types.ObjectId,
+        ref: "User",
+      },
+    ]
+
+ Chat.find({members: req.user}).populate("members","name avatar")
+
+
+--------------------------------------------------------------
+                                              PRACTICE QUESTION 
+
+//->create
+//)insert one document
+//)insert one document with options
+//)insert many document 
+//)insert many document in case of same id
+--------------------------------------------
+//->read
+//)find one document with name ram
+//)return list of documents having age b/w 30 and 40 
+//)return list of documents having including 30 and 40 
+//)return list of documents having not including 30 and 40 
+//)Find documents where the age is either less than or equal to 30 or greater than or equal to 40.
+//)Find documents where the age is neither less than or equal to 10 nor greater than or equal to 12.
+//)Find documents where the age is greater than 30 and the hobbies include "walking"
+//)Find documents where the age is not greater than 5.
+//)return weher value of age field is greater than average value of age field
+//)return devided values
+-----------------------------------------------
+->update
+//)increment the age by 2    
+//)decrement the age by 2    
+//)increase age of John Doe, only if age is lesser than 50
+//)multiply age by 2 of John Doe
+//)remove age field from John Doe
+//)rename the age field of John Doe
+-----------------------------------------------
+->delete 
+//)delete collection
+//)delete one document
+//)delete many document
+----------------------------------------
+->code for schema validation and modification of schema validation
+------------------------------------------------
+types of indexing
+//)command for getIndex and createIndex for all types
+//)search youtube in the documents where age is greater than 12 and also expires index after sometime 
+//)collection gets blocked if index starts getting created make it unblock
+------------------------------------------------
+->modal creation
+------------------------------------------------
+
+//1)Students who have experience in amazon ?
+//2)how many students who worked in spotify ?
+//3)how many students who have worked in 3 companies ?
+//4)how many students who have worked in more than 3 companies ?
+//5)how many students whose hobbies are walking and read  ?
+//6)how many students who are working in amazon and has salary greater than 1001 ?
+//7)sort students working in amazon based on salary and if salary same then sort on name
+//8)for all having  duration than 2 add new field neglect:true to first matched element
+//8.1)add new field neglect:true to all element of experience array
+//8.2)for all having duration lesser than 2 add new field neglect:true 
+//8.3)add new document in the experience array of Ram
+//8.4)add new document in the experience array of Ram but avoid redundancy
+//8.5)remove a document in the experience array of Ram
+//8.6)remove a document in the experience array of Ram from top and bottom
+
+//9)return document with gender as male using aggregate
+//10)return group document by age containing _id and names arry
+//11)return group document by age containing _id and pooraDocumnt arry containig full details
+//12) return the count of male age wise
+//13)return count of male teacher of same age group in sorted order
+//14)return hobbies of students based on the age 
+//15)return hobbies of students based on the age in single array
+//16)return number of students based on the hobbies
+//17)return total number of hobbies of all student
+//18)left outer join  
+//19)right outer join
+//20)inner join
+//21)full outer join
+//22)transaction query
+/23)capped query
+
+
+
+
+//1 to 19
+  [
+    { "_id": 1, "name": "John Doe", "age": 35, "gender": "male" ,    
+     hobbies:["walk","cricket"],
+      experience:[
+        {company:"amazon", duration:1, salary: 1003},
+        {company:"spotify", duration:3, salary: 1004},
+        {company:"paytm", duration:1, salary: 1001},
+      ]
+    },
+    { "_id": 2, "name": "Jane Smith", "age": 40, "gender": "female",
+        hobbies:["walk","cricket"],
+      experience:[
+        {company:"amazon", duration:1, salary: 1003},
+        {company:"spotify", duration:3, salary: 1004},
+        {company:"paytm", duration:1, salary: 1001},
+      ]
+     },
+    { "_id": 3, "name": "Michael Johnson", "age": 45, "gender": "male",
+       hobbies:["walk","cricket"],
+      experience:[
+        {company:"amazon", duration:1, salary: 1003},
+        {company:"spotify", duration:3, salary: 1004},
+        {company:"paytm", duration:1, salary: 1001},
+      ]
+     },
+    { "_id": 4, "name": "Emily Williams", "age": 30, "gender": "female",
+      hobbies:["walk","cricket"],
+      experience:[
+        {company:"amazon", duration:1, salary: 1003},
+        {company:"spotify", duration:3, salary: 1004},
+        {company:"paytm", duration:1, salary: 1001},
+      ] 
+      },
+    { "_id": 5, "name": "Robert Brown", "age": 38, "gender": "male",
+            hobbies:["walk","cricket"],
+      experience:[
+        {company:"amazon", duration:1, salary: 1003},
+        {company:"spotify", duration:3, salary: 1004},
+        {company:"paytm", duration:1, salary: 1001},
+      ]
+     },
+  ]
+
+
+//20 to 23
+cust = [ 
+  {
+    _id:1,
+    name:"abc",
+  } ,
+    {
+    _id:2,
+    name:"def",
+  } ,
+  {
+    _id:3,
+    name:"ghi",
+  } ,
+  ]
+
+order =  [ 
+  {
+    _id:11,
+    products:"abc",
+    cust_id: 1
+  } ,
+    {
+    _id:22,
+    products:"def",
+    cust_id: 2
+  } ,
+  {
+    _id:33,
+    products:"ghi",
+    cust_id: 5
+  } ,
+]

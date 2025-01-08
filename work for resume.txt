@@ -1,0 +1,116 @@
+certificate upload - requirement for uploading certificate, but graphql doesnt support inbult file type, so I asked UI to send me the file in base64 string format
+                    then I implemented the logic which will store the string in the file at server side and then send it versa,but again there is an issue that we can't store certificate physically as this will cause security risk, so I again added the logic which will convert the string to blob then to bufferdata and then write the data into a file which is created by tmp package and then send that file to versa
+
+----------------------------
+coursebundker/ecommerce
+
+central error handling - Instead of using try catch at every place I created a error handling middleware, which includes a catchasyncfunction , Errorhandling class(because Error class only has message field and not status field) and a utility error handler, in which we wrap all the async functions to handler error   
+
+login/logout routes - whenever user register I hashed the password using bcrypt package also created _id as token using jwtjson package and store it in the cookie 
+
+isAuthenticated - middleware to allow only users to access certain routes, if its logged in then get token from cookie and if token exist then decode _id add existing user to req.user and add this middleware before routes which required access
+
+forget/reset password - once user is find via email, we will send resettoken created by crypto to user email(done using nodemailer), also meantime we hash the token and store in User so that once we get token while resetpassword we can compare and match the correct token from req.body to user.resettoken    
+
+createCourse/addlectures - isAuthenticated, authorizeAdmin,used multer middleware to accept file into nodejs then send file to datauri and then send uri to cloudinary to upload file(poster) then save the course details into database and for poster pass cloudinary urls 
+
+
+
+
+
+-----------------------------------------------
+FE work for resume
+
+1)Infinite scroll - rather than showing all messages , it will come in chunks with loading , using hook useInfinitescroll
+backend:
+export const getMessages = TryCatch(async (req, res, next) => {
+  const chatId = req.params.id;0
+
+  const { page = 1, limit = 20 } = req.body;
+
+  const [messages, totalMessageCount] = await Promise.all([
+   Message.find({chat: chatId})
+  .sort({createdAt: -1})
+  .skip((page-1)*limit)
+  .limit(limit)
+  .populate("sender","name avatar")
+  .lean(),
+  Message.countDocuments({chat:chatId})
+  ]);
+
+  const totalPages = Math.ceil(totalMessageCount/limit);
+
+  return res.status(200).json({
+    success: true,
+    message: messages.reverse(),
+    totalPages
+  })
+});
+
+frontend: learn from youtube
+
+
+2)Code splitting is done for optimization(using lazy loading)(only one file routed file will be loaded at a time in js bundle)
+
+3)lazyloading on api using rtk query and debouncing implemented in search user
+  useEffect(() => {
+  const timeOutId = setTimeout(()=>{
+    searchUser(search.value).then(({data})=>setUsers(data.users))
+  },1000)
+
+
+  return () => {
+    clearTimeout(timeOutId)
+  }
+
+  }, [search.value])
+
+
+
+
+--------------------------------------------
+Backend work for resume :
+
+1)multer for file handling
+
+2)authentication is done using jsonwebtoken and cookies
+
+4)caching for code optimization
+
+5)Used socket.io for realtime messeging
+
+6)implemented centralized error handling using error middleware and error class along with centralized TryCatch middleware using currying
+
+
+
+agile methodologies
+
+->PR raise, rebase, work in a team, take ownership, communicate what I am thinking.
+
+1)Tell me about your project ?
+->project name + domain name(domain specif info) + problem project is solving
+
+2)Brief description of project ?
+->hld 
+a)architecture of project(draw.io to draw architecture)
+b)end to end functional of prject(how its build, how its deployed, where is ci/cd pipelines, how jobs in yaml file is working)
+c)different modules of project
+                  + 
+->lld
+
+3)Technology used in project
+->technology question
+->why certain technology , because bound to business and company.
+
+4)How project security is managed?
+->security of project
+
+5)Team members and responsibility?
+->(developer and independent on analytics) (api development, functionality added by me)(user story, dev, int, testing, production)
+
+6)challenges I have faced in my journey?
+->challenges in project (r&d for aws work in analytics) (team challenges)
+
+7)Situational question?
+->situational ques(if team going on leave and deadline is there how will you manage)
+

@@ -1,0 +1,148 @@
+1)what is graphql and how its diffrent from rest?
+    graphql is a query language and runtime for api which allows client to request only the data they need
+    unlike rest where client recieve fixed datastructure , gql enables cleint to define the shape and structure of the response
+    graphql sits between client and server
+
+2)Architecture of graphql
+    it consists of server that expose graphql endpoint , a schema defining types and operation, resolver that handles data fetching 
+    and a client that sends queries to the server
+
+3)what is graphql schema and how its define?
+    graphql schema define types, queries and mutations available in an API
+        type Query {
+        user(id: ID!): User
+        }
+
+        type User {
+        id: ID!
+        name: String!
+        posts: [Post]
+        }
+
+        type Post {
+        id: ID!
+        title: String!
+        content: String!
+        }
+
+4)what is graphql resolver?
+    resolver are function that determine how to fetch or manipulate data for a specific field in graphql schema, they are responsible
+    for returning the data requested in graphql
+   
+        const resolvers = {
+        Query: {
+        user: async (parent, args, context) => {
+            const { id } = args;
+            return await context.db.getUserById(id);
+            },
+        },
+        User: {
+            posts: async (parent, args, context) => {
+            return await context.db.getPostsByUserId(parent.id); //parent contains user object
+            },
+        },
+        };
+
+parent parameter contains the result returned from the resolver of the parent field.
+Context: A shared object that is used by all resolvers in a query
+
+5)how graphql handle versioning compared to rest?
+    graphql avoid versioning by allowing cleint to only request the data they need, if changes are made in existing schema , queries will
+    still work and client can choose to adopt new fields gradually
+
+6)what are directives and how are they used?
+    directives provides a way to describe additional instructions to server about how a field or fragment should be handled
+    @directives syntax is used to apply directives in query file
+
+    query GetUser($withPost:Boolean!){
+        user(id:ID!){
+            name
+            post @include(if: $withPost){
+                title
+                description
+            }
+        }
+    }
+
+    custom directive on schema
+    directive @auth(requires: Role = ADMIN) on FIELD_DEFINITION
+
+    enum Role {
+    ADMIN
+    USER
+    }
+
+    type Query{
+        user(id:ID!): User @auth(requires: Admin)
+    }
+
+7)Explain concept of batching/caching in graphql and how can we optimise graphql queries?
+    batching means combining multiple queries into a single request to avoid overhead
+    caching involves storing and reusing the results of previous queries to avoid redundant data fetching.
+
+8)Intrpspection in graphql? 
+    Intrpspection allows client to query schema itself, which makes it easier to understand the api.
+
+9)how graphql handle realt time data?
+    it handles using subscription, by allowing client to subscribe to specific event, and server pushes data to client when changes occur.
+
+10)what is dataloader in graphql?
+    dataloader is a utility for batching and caching
+
+11)Explain fragments in graphql?
+    fragments are reusable units of logic that allow you to define parts of a query that can be used in multiple places. 
+        fragment userFields on User {
+            id
+            name
+            email
+            profilePicture
+        }
+     query GetUsers {
+            users {
+                ...userFields
+            }
+        }   
+
+12)what is apollo client ?
+    it simplifies data fetching and state managemnet in UI    
+
+13)pagination in graphql?
+    pagination is fetching a set of data at a time
+        curser based pagination 
+            posts(offset: 0, limit: 10) //offset specifies the starting index, and limit specifies the number of items to fetch
+
+       offset based pagination
+        posts(first: 10, after: "cursor123")
+            first specifies the number of items to fetch.
+            after is the cursor representing the last fetched item.
+            pageInfo provides metadata about the pagination state, such as whether there is another page of data.
+
+14)Data valdiation in graphql
+    type User {
+        id: ID!
+        email: String!
+        age: Int
+        }
+15)schema stitching?
+    combining multiple schema into one schema 
+
+16)how graphql connects with databases?
+    const server = new ApolloServer({
+        typeDefs,  // Your GraphQL schema
+        resolvers, // Your resolver functions
+        context: ({ req }) => {
+            // Create and return the context object
+            return {
+            db: {
+                mongoose,  // For NoSQL databases
+                User        // Model for NoSQL
+            },
+            user: req.user, // Example of adding user info if using authentication
+            };
+        },
+});
+
+
+17)error handling graphql?            
+    errors are typically included in the response as part of the errors array.
+

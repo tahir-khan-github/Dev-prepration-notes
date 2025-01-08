@@ -1,0 +1,145 @@
+->In normal http request what happen is client request to server and server will give response and this is only a unidirectional flow
+    and every time a TCP connection is established
+
+-> where as in webSockets TCP connection will establish only one time, also data can be flow in bi-directional 
+usually used in realtime application
+
+->Socket.io -> a library for webSocket 
+
+->Communication protocols(how communcation will happen between client - server)
+eg: http(Hypertext Transfer Protocol), ftp(File Transfer Protocol), smtpSMTP (Simple Mail Transfer Protocol)., webSocket
+
+->http - one way communcation only from client to server
+->webSockets - two way communication server can also sends data to client without any request, eg: chatting
+
+->webSockets have events which client & server is listening and emetting
+
+->io is an entire circuit,
+ client will get connected to circuit in the form of Socket
+ once Socket connected with circuit, connection is completed
+
+-> every Socket has an Id(which is its room id)
+->every socket is in individual room
+
+-> emit - to trigger events(send some data)
+-> on - to listen events (get data)
+
+-> io.emit(event1, "hi") it means it will go to whole circuit(all the Sockets in the circuit will recieve it)
+-> io.to(membersSocket).emit(event1, "hi") it means it will go to all the sockets of membersSocket
+->io.on("connection",()=>) connection listener listening whenever connection established
+
+->socket.emit() - means  emetting and event
+->Socket.on(event1,()=>{}) listening to and event
+socket.off(event, handler);  removes a specified listener from the listener array for an event named eventName
+->Socket.broadcast.emit(...) - except the current socket , all the socket will be able to listen to this event
+->socket.to(individual socket id).emit - to send some thing to single individual socket
+->socket.to(room id).emit - to send some thing to multiple individuals in a single room.
+->socket.join(room name) - to join Sockets to a single room
+
+
+
+sample from event work in chat.jsx and app.js in server 
+
+1)emiting NEW_MESSAGE event when new message is send/submit from ui
+
+socket.emit(NEW_MESSAGE, { chatId, members, message }); 
+
+2)listening NEW_MESSAGE event in the backend and doing some work and then emitting NEW_MESSAGE event back to UI
+
+//need to add connection event emiting
+
+io.on("connection", (socket) => {  
+  const user = socket.user;
+
+  userSocketIDs.set(user._id.toString(), socket.id);
+
+  socket.on(NEW_MESSAGE, async ({ chatId, members, message }) => {
+ 
+    const messageForRealTime = {
+      content: message,
+      _id: uuid(),
+      sender: { _id: user._id, name: user.name },
+      chat: chatId,
+      createdAt: new Date().toISOString(),
+    };
+
+    const messageForDB = {
+      content: message,
+      sender: user._id,
+      chat: chatId,
+    };
+
+    const membersSocket = getSockets(members);
+
+    io.to(membersSocket).emit(NEW_MESSAGE, {
+      chatId,
+      message: messageForRealTime,
+    });
+
+    io.to(membersSocket).emit(NEW_MESSAGES_ALERT, {
+      chatId,
+    });
+
+    try {
+      await Message.create(messageForDB);
+    } catch (error) {
+      console.log(error);
+    }
+  });
+  
+
+
+  socket.on("disconnect", () => {
+    userSocketIDs.delete(user._id.toString());
+  });
+});
+
+3)After event gets emitted from backend , now listening in UI
+
+const newMessageListener = useCallback((data) => {  //listenar function
+    if(data.chatId !== chatId) return;
+    setMessages((prev) => [...prev, data.message]);
+  }, [chatId]);
+
+ const eventArr = { 
+    [NEW_MESSAGE]: newMessageListener,
+    ..other events
+  };
+
+useSocketEvents(socket, eventArr);
+
+const useSocketEvents = (socket, handler) => {
+  useEffect(() => {
+    Object.entries(handler).forEach(([event, handler]) => {
+      socket.on(event, handler);
+    });
+
+    return () => {
+      Object.entries(handler).forEach(([event, handler]) => {
+        socket.off(event, handler);
+      });
+    };
+  }, [socket, handler]);
+};
+-----------------------------------------------
+webSockets vs Socket.io vs Polling
+
+1)Polling :-
+a)short-Polling -> client will check the server for new data at predefined interval, so in that case new data will be send to client
+                    at regular interval
+
+b)long-Polling -> similar to short-Polling but here client doesn't check blindly for  new information at a set interval, instead
+                  client make request and server holds onto request, till new data is available, once new data is available server    
+                  will send new data to client , and as soon as client recieves data, it immediately send new request to server
+
+
+2)Websockets :- Websockets are protocols, In webSockets TCP connection will establish only one time, also data can be flow in bi-directional 
+
+3)socket.io :- Its a javascript library to enable realtime web application, it allows client and server to have bi-directional communication
+                what socket.io does it will upgrade a connection b/w client and a server to websocket protocol if its possible 
+                  otherwise it will downgrade the connection to http pooling method, it will do all of this in the background
+
+-------------------
+WebRTC (Web Real-Time Communication)
+It is an open-source project that provides web applications and website ability to communicate audio and/or video media.
+ In b/w browsers without a server, mostly used in video chat apps

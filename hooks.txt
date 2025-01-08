@@ -1,0 +1,48 @@
+Hooks:-
+
+1)useState is React Hook that allows you to add state to a functional component. 
+It returns an array with two values: the current state and a function to update it. 
+The Hook takes an initial state value as an argument and returns an updated state value whenever the setter function is called.
+React will rerender its component on changing the useStateValue, 
+
+2)seEffect hook in React is used to handle the side effects in React such as fetching data, and updating DOM
+The useEffect Hook is like a function takes two arguments: a callback function and an optional dependency array. 
+The callback function will be executed after rendering,
+and the dependency array will determine when the effect should be re-run.
+* return ()=>{} inside useEffect will run when component gets unmount
+
+3)useContext Hook allows us to consume values from a React "Context". 
+Context provides a way to pass data through the component tree without having to pass props down at every level.
+
+
+ 4)useRef is a hook that allows you to create a mutable reference to an element or a value
+ or to create reference of an element
+ const inputRef = useRef(null);
+
+  const focusInput = () => {
+    inputRef.current.focus();
+  };
+
+  return (
+    <div>
+      <input ref={inputRef} />
+      <button onClick={focusInput}>Focus Input</button>
+    </div>
+    )
+
+5)useMemo
+useMemo is a React Hook that lets you memoize/cache the result of a calculation between re-renders.
+useMemo(()=>{},[])
+useMemo(generateId,[]) -> means it will generateId only when component gets loaded for the first time
+useMemo(generateId,[value]) -> means it will generateId only when value state gets changes
+
+6)useCallBack
+useCallBack is a React Hook that lets us cache a function defination between re-renders. which will avoid recreating of it on each rendering
+const fun = useCallBack(()=>,[]);
+fun();
+Also we can prevent rerenderig of child component on parent component rendering
+export default memo(child component name)
+
+7) useParams Hook helps to access the parameters of the current route 
+
+8)useNavigate hook is used ti navigate between pages

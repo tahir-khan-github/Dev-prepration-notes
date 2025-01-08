@@ -1,0 +1,323 @@
+1)what is node js red
+    It is visual programming tool for nodejs that is used to wire hardware devices & online services as part of IOT application
+
+2)diff bw operational error and programming error
+    Operational errors are errors that occur due to external factors (network error, database connection failure, file not found)
+    Programming errors, occur due to mistakes  in the code written by developers(synatx or logical error)
+
+3)what is blocking code
+    it refers to operations that halt the execution of a program until a particular task is completed.
+
+4)what is setTimeOut()
+    it is a built-in function in JavaScript that allows you to schedule a function to be executed after a specified period of time.
+
+5)what is callback
+    a callback is a function that is passed as an argument to another function and is executed after some operation has been completed
+
+6)What is callback hell
+     situation where multiple nested callbacks make code difficult to read and maintain. 
+     This typically occurs when dealing with asynchronous operations in JavaScrip
+
+7)diff b/w async & await
+    The async keyword is used to mkae a function as asynchronous, which function returns a promise 
+    and it doesn't block the execution of other code outside the function.
+    -----
+    The await keyword can only be used inside async functions. It pauses the execution of the function until the promise is completed
+
+8)javascript vs nodejs
+    JavaScript is a scripting language used to create dynamic and interactive content on websites, primarily executed in web browsers.
+    Node js is a runtime environment that allows JavaScript to be used for server-side development
+
+9)what is singlethreaded programming
+    Single-threaded programming refers to the execution of code in a single sequence of operations, using only one thread of execution
+
+9.1)if node js single threaded then how nodejs handles multiple task at once
+    it takes all the request in the event queue and an event loop is watching over it, the event loop takes out request in FIFO and checks
+    whether request is blocking or nob-blocking , if its non-blocking it executes it , and if its blocking it sends it to thread pool
+    thread pool assigns a thread to request which is responsible for completing the request
+    threads are limited , by default it uses 4 threads and once thread is free only then new request will be assigned 
+
+9.2)runtime environment vs framework
+    A runtime environment provides the infrastructure and services required to execute code written in a particular programming language
+    A framework is a pre-built set of tools, libraries designed to for the development of specific types of applications
+
+9.3)node vs express
+    Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine.
+    Express is a  framework for Node.js that provides a robust set of features to develop  applications.
+
+9.4)advantages and disadvantages of nodejs
+    advantages: Node.js uses an event-driven, non-blocking I/O model, which allows it to handle multiple requests concurrently 
+    disadvantages: Lack of Built-in Support for Multi-threading, Callback Hell:Asynchronous programming in Node.js often leads to deeply nested callbacks, 
+
+9.6)synchronus vs asynchronous
+    Synchronous operations are those that are executed sequentially.
+    Asynchronous operations allow tasks to be executed without blocking the execution of other tasks
+
+10)what is npm and node_modules, package json
+    npm (Node Package Manager) is a package manager containing libraries which we use in our nodejs code
+    a directory that stores all the installed packages and their dependencies for a project
+
+11)what are modules in nodejs and types of module  and ways of importing and exporting it
+    modules are individual pieces of code that encapsulate functionality and can be reused across different parts of an application.
+    types:
+    1)core module: os, fs
+    2)local module: which we develop
+    3)third party module: installed from npm (express, loadash)
+    ----
+    CommonJS: Uses module.exports and require()
+    ES6 Modules: Uses export and import
+
+11.1)how to import single or multiple modules in nodejs
+    module.exports = {
+        add,
+        subtract,
+        multiply
+    };
+
+    const math = require('./math');
+    math.add()
+    ----------------
+    export { add, subtract, multiply };
+    export default pi;
+
+    import pi, { add, subtract, multiply } from './math.mjs';
+    we can rename default export while importing
+
+
+
+12)what is fs module
+    fs.readFile(file, format, (err, data) => {})
+    const data = fs.readFileSync('example.txt', 'utf8');
+    fs.writeFile(file, content, (err) => {})
+    fs.writeFileSync(file, content)
+    fs.appendFile(file, content, (err) => {})
+    fs.unlink('example.txt', (err) => {})
+
+12.1)what is path module
+    path.basename(filePath); //last portion of a path (the file name).
+    path.dirname(filePath); //directory name of a path '/users/admin/documents'
+    path.extname(filePath);
+    path.join('/users', 'admin', 'documents', 'file.txt');
+    path.resolve('users', 'admin', 'documents', 'file.txt');// absolute path from root
+
+12.2)what is os module
+        os.platform()
+        os.arch()
+
+12.3)what is http module
+        http module allows you to create an HTTP server that can listen for and respond to HTTP requests.
+        ---createServer--------
+        const server = http.createServer((req, res) => {
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'text/plain');
+            res.end('Hello, World!\n');
+        });
+        const PORT = 3000;
+        server.listen(PORT, () => {
+        console.log(`Server running at http://localhost:${PORT}/`);
+        });
+        ---send request to other server---------------
+
+        const options = {
+        hostname: 'example.com',
+        port: 80,
+        path: '/',
+        method: 'GET'
+        };
+
+        const req = http.request(options, (res) => {
+            res.setEncoding('utf8');
+            res.on('data', (chunk) => {
+                console.log(`BODY: ${chunk}`);
+            });
+            res.on('end', () => {
+                console.log('No more data in response.');
+            });
+        });
+
+        req.on('error', (e) => {
+        console.error(`Problem with request: ${e.message}`);
+        });
+
+        req.end();
+        ---------post-----------
+        const server = http.createServer((req, res) => {
+            if (req.method === 'POST') {
+                let body = '';
+
+                req.on('data', (chunk) => {
+                body += chunk.toString();
+                });
+
+                req.on('end', () => {
+                console.log(`Received data: ${body}`);
+                res.end('Data received');
+                });
+            } else {
+                res.end('Send a POST request to send data');
+            }
+});
+----------------------get----------------
+
+            const profile = {
+            name: 'John Doe',
+            age: 30,
+            occupation: 'Software Developer',
+            location: 'San Francisco, CA',
+            };
+
+            const server = http.createServer((req, res) => {
+            if (req.method === 'GET' && req.url === '/getmyprofile') {
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify(profile));
+            } else {
+                res.writeHead(404, { 'Content-Type': 'text/plain' });
+                res.end('Not Found');
+            }
+            });
+
+
+15)what is ip adress and how to obtain ip adress of user in nodejs
+    An IP address (Internet Protocol address) is a unique identifier assigned to each device connected to a network
+     cconst ipAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+
+---------------------Rest Api------------------
+1)what is an api?
+   api is a set of rules that allows different software applications to communicate with each other
+
+2)what is Rest and rest api?
+    REST (Representational State Transfer) is an architectural style for designing networked applications. 
+        Stateless Communication: The server does not keep track of client state between requests, Each request from a client to a server must contain all the information needed to understand and process the request
+        Client-Server Architecture: The client and server are separate entities, allowing them to evolve independently.
+        Standard HTTP Methods:
+        GET: Retrieve a resource.
+        POST: Create a new resource.
+        PUT: Update an existing resource.
+        DELETE: Remove a resource.
+        PATCH: Partially update a resource.
+    api that are developed on REST principals are rest api
+
+3)what is URI?
+    A URI (Uniform Resource Identifier) is a string of characters that uniquely identifies a resource on the internet
+        it contains scheme(https), domain name, path, query, 
+
+4)what are idempotent methods?
+    no matter how many times you apply an idempotent method, the outcome remains the same after the first application.
+    like get, put, delete they will show have no effect after first application
+    but POST is non-idempotent as every time it will change the state
+
+5)what is SOAP ?
+    SOAP (Simple Object Access Protocol) one of a Protocol, its much strict than REST and It's  based on XML.
+
+-------------------Express-------------------
+1)what is middleware?
+    In Node.js, middleware refers to functions that have access to the request (req), response (res),
+    and the next middleware function in the application's request-response cycle.
+    example - authentication middleware, which check for the request before it reaches to route handler 
+
+    app.use(express.json()); //to access  json data in request
+    app.use(express.urlencoded()); // to access  formdata data in request
+    app.use(cookieParser()); // to access cookie
+
+
+2)how error handling is done?
+    error handle is done using error middleware, and from any point of code we return next()with error which goes to error middlware
+    return next(new ErrorHandler(404,"not found"))
+
+    class ErrorHandler extends Error{
+        constructer(message, statusCode){
+            super(message) //message is passed to Error class(parent of ErrorHandler class) via super (constructer of parent class)
+            this.statusCode = statusCode;
+        }
+    }
+
+    const errorMiddleware = (err, req, res, next) => {
+
+    err.message ||= "Internal server error";
+    err.statusCode ||= 500;
+    // add conditions to handler other error
+    const response = {
+        success: false,
+        message: err.message
+    }
+
+    //add conditions to handle response based on  environment
+
+    return res.status(err.statusCode).json(response)
+};
+
+const TryCatch = (passedFun)=> async (req, res, next)=>{
+    try {
+        await passedFun(req, res, next);
+    } catch (error) {
+         next(error)
+    }
+}
+
+3)how authentication is done?
+    authentication is done using jsonwebtoken and cookies ,at the time of registering user we create a token using jwt.sign and sends it to client in the cookie
+    
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET); //jwt.sign will create a token with payload as { _id: user._id } and will be signed using secret
+
+    const cookieOptions = {
+        expires: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000), // 15 days
+        httpOnly: true, // This ensures the cookie is only accessible by the web server
+        sameSite: 'none', // Ensure this matches your front-end and back-end setup, especially if using cross-site requests
+        secure: true // Make sure this is true only in production
+    }
+    
+    return res.status(code).cookie("chat-token", token, cookieOptions).json({
+        success: true,
+        message,
+    });
+
+    
+    here a middleware is created to allow only users to access certain routes, 
+    if its logged in then get token from cookie and if token exist then decode _id add existing user to req.user and add this middleware before routes which required access
+
+    const isAuthenticated = (req, res, next)=>{
+    const token = req.cookies["chat-token"];
+
+    if(!token) return next(new ErrorHandler(401, "Login first"));
+
+    const decoded = jwt.verify(token,process.env.JWT_SECRET); //decodes the token and checks its signature against the secret key, if success then returns the payload
+
+    req.user = decoded._id;
+
+
+    next();
+    }
+
+
+4)express api?
+
+app.js(parent route) -> routes(return router have all route related to course) -> controller(actual operation on that route)
+
+app.use("/api/v1", course);
+
+const router = express.Router();
+router
+  .route("/createcourse")
+  .post(isAuthenticated, singleUpload, crearteCourse);
+
+5)role of next() in express
+    next() will move the working to flow to the next handler
+    if some argument is passed then flow moves to matching handler
+    inorder to handle error we return next() with error class
+
+6)Multer is used to access files in req.files
+    by default it uses ram
+    const multerUpload = multer({ 
+        limits:{
+            fileSize: 1024 * 1024 * 5,
+        }
+    });
+
+    const singleAvatar = multerUpload.single("avatar");
+    const attachmentMlter = multerUpload.array("files",5);    
+
+
+
+
+

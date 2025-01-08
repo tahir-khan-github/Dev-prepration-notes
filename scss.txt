@@ -1,0 +1,51 @@
+we can create variables :
+$colors: rgba1,rgba2
+
+background-color:nth($color,2)
+
+Nesting:
+.product{
+    background-color:rgba;
+    width:10px;
+    >h1{
+       width:10px; 
+    }
+    >a{
+        width:10px;
+    }
+}
+
+psuedo selector:
+h1{
+    width:10px; 
+    &:hover{
+        properties
+    }
+   }
+
+partials: seperate files to store variables
+
+import vs use ("use" when we have same variables name but from diff file to avoid conflict we use)
+
+properties inheritance:
+
+p{
+    @extend button
+}
+
+template:
+%custom{
+    properties
+}
+p{
+    @extend %custom
+}
+
+mixin : 
+@mixin customfun(properties){
+    bg-color:properties
+}
+
+p{
+    @include customfun(properties)
+}

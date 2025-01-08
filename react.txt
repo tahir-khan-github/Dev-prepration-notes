@@ -1,0 +1,77 @@
+React is a library means packages need to be installed for initial support
+
+We can create SPA with react, which is websites will load only one time 
+eg: youtube as it gets loaded one time then only data gets loaded
+
+We can reuse same piece of code, by creating component
+we can break the website into component structure , eg: we can use navbar component in every page
+
+main file that loads our website is index.html in public folder
+in index.js file we get "root" div from above file by document.getElementById("root")
+then we pas the above root into react dom function "createRoot()"
+then in root.render we render our main component i.e App and inside it we place all the component
+
+we use JSX to write html types code in the react
+
+
+routing can be done in react without reloading the page
+
+warap the whole app in the BrowserRouter then routing will be able to do
+ and wrap the component which needs routing in Routes tag
+<Link to=""> is used the component itself
+
+LifeCycle in react:-
+
+componentWillMount < v17
+
+1)componentDidMount :
+It is a lifecycle method called automatically by React after the component has been rendered 
+like useEffect(()=>{})
+
+2)shouldComponentUpdate:
+It that determines whether a component should re-render or not  on state change
+if returned false then it will render component
+
+3)componentDidUpdate:
+componentDidUpdate() is invoked immediately after updating occurs  or state changes
+
+4)componentWillUnmount:
+It gets invoked immediately before a component is unmounted and destroyed. Perform any necessary cleanup in this
+
+Higher Order function:
+It is a function that takes a component as an argument and returns a new component that wraps the original component
+We save lot of repeated code using this
+
+Optimization:
+Bundel:
+ bundling is the process of combining multiple JavaScript files and dependencies into a single file. This single file is called a bundle
+1)code spliting:
+It is a technique where we split our code into various bundles which can then be loaded on demand or in parallel
+This can significantly reduce the load time of our application 
+Lazy keyword from react to do dynamic import which will split the code from bundel.js file in source which increase the app loading speed
+const home = lazy(()=> import("./home"))
+we can also use suspense tag to creating loading while routing
+
+2)debouncing
+Debouncing is a technique in React JS that prevents a function from being called too frequently.
+delaying our code/function using setTimeOut
+eg:
+useEffect(() => {
+    const getData = setTimeout(() => {
+      axios
+      .get(`https://api.postalpincode.in/pincode/${pinCode}`)
+      .then((response) => {
+        console.log(response.data[0]);
+      });
+    }, 2000)
+}, [pinCode])
+
+
+--------------------------------------------
+Redux : It is a state management library for JavaScript applications
+Store to have variable and data
+Reducer helps in changing the state
+Action is used to trigger Reducer
+
+
+

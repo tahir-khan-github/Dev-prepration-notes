@@ -1,0 +1,165 @@
+css types, inline and external
+
+css :
+
+->!important will implement the css irrespective of preference
+
+-> child {span > p}  desendence {li li} at any heirarchy
+
+->properties:
+1)text :
+      font-family,font-size, font-style, font-weight, 
+      text-align:center,left,right,justify,
+      text-transform:capetelize, capitalcase, lowercase,
+      text-decoration: underline,overline
+      line-height:20px /*gap between the lines
+      letter-spacing: px /* space between letters
+      word-spacing: px /* space between words
+      text-shadow: xaxis yaxis px color
+
+2)background :
+      background-image:url("")
+      background-image:linear-gradiant /*for shadowing of multiple color
+      background-repeat: no-repeat
+      background-attachment: fixed
+      background-size: cover, curtain(no stretch)
+      background-positions: xaxis yaxis top left % bottom %
+
+3)list-style: square, none,circle, inside , outside, url()
+
+4)box-sizing: border-box
+
+5)scrollbar:
+      scroll-behavior : smooth
+      ::-webkit-scrollbar {
+        display: none;
+      }
+
+5)display:
+      float: left, right.. /*it will not be according to body
+      clear: left, right,both.. /*it will not be effected by float element
+      display:block, inline 
+      ---------------------
+      display: flex / to convert it to flexbox
+      justify-content: apply on the flex content horizontally
+      align-items: apply on the flex content vertically
+      align-self: apply on the flex specifx element vertically
+      flex-direction: row(default), coloumn
+      flex-wrap: to wrap the element when page shrinks
+      ---------------------
+      display:grid / to convert it to grid
+      grid-template-coloumn: to adjust elements into columns
+      grid-template-rows: to adjust elements into rows
+
+
+6)positions:
+      position: static    /* default
+      position: relative, /* it unlocks power of top, left, right, bottom  form its own position
+      position: absolute  /* it unlocks power of top, left, right, bottom  form its parent position
+      position: fixed     /* it unlocks power of top, left, right, bottom and gets fixed irrespective of page
+
+  
+->units:
+1)relative:
+      %,em is of parent element unit, 500% == 5em
+      rem is of root element
+      responsiveness units:
+      vw is of view port width
+      vh is of view port height
+      vmin is of min of height or width
+      vmax is of max of height or width
+      (px/resolution * 100)
+2)absolute: 
+      cm 
+      px
+
+
+->Responsiveness:
+    @media all and (max-width:600px){
+      body{
+        properties
+      }
+      h1{
+        properties
+      }
+    }
+
+
+->animations:
+1) transition:
+      transition-properties: background,color, all... it will target the specified properties
+      transition-duration: specifiy time
+      transition-timing-function:linear(constant), ease-in (slow to fast), ease-out(fast to slow)
+      transition-delay: effect gets delay
+2) transform:
+      transform: skew(30deg), skewX(), skewY() /* move at same position
+      transform: translate(),translateX(),translateY(), /*move to x-axis or y-axis
+      transform: scale(),scaleX(),scaleY() /*increase the size of the element in height and width
+      transform: rotate(),rotateX(),rotateY(), rotateZ() /*rotate on x or y and z axis
+
+3) animations:
+      @keyframes myanimation{
+        from{ (start)
+          animation-properties
+        }
+        to{ (end)
+          animation-properties
+        }
+        %{ (based on percent)
+
+        }
+      }
+
+
+->pseudo elements:
+      ::first-line
+      ::first-letter
+      ::before mostly to apply background-image with (z-index and opacity)
+      ::after
+      ::webkit-file-upload-button{
+          properties to style upload file 
+      }
+      ::placeholder{
+          properties
+      }
+
+
+div overlay to hide video settings
+
+for blurring opacity is used
+
+filter: drop-shadow(0 40px 10px rgba(0,0,0,0.3));
+
+.container{
+  background-color: rgb(234, 227, 203);
+  width: 70%;   // to reduce box width
+  margin: auto; // to reduce box width
+  min-height: 100vh; /* so that element doesn't get overflow from container */
+   padding: 4vmax; //4% of max of height or width
+  box-sizing: border-box; // so that padding, margin,e.t.c will always be in the size and doesn't go out
+}
+
+
+input, textarea, button {
+  padding: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.326);
+  border-radius: 5px;
+  margin: 10px;
+  font-size: 1.2rem;
+}
+
+
+
+//round button
+.task > button {
+  border-radius: 100%;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  font-size: 1.6rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+overflow-x: auto; //for scrollbar on the x-axis

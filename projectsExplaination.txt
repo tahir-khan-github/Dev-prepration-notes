@@ -1,0 +1,25 @@
+Projects
+------------------------
+SAFE Portal (javascript, nodejs, expressjs, socket.io, mongodb)
+10/2023 - Present
+- network domain project 
+Implemented centralized error handling in the application by creating custom error middleware and an error class. Additionally, developed a centralized TryCatch middleware using currying to streamline error management across all routes, enhancing the robustness and maintainability of the codebase.
+- Utilized Socket.io for real-time messaging, enabling seamless communication and data exchange between clients and servers, significantly enhancing the responsiveness and interactivity of the application.
+Implemented authentication using JSON Web Tokens (JWT) and cookies, ensuring secure user sessions and efficient management of user authentication and authorization across the application.
+Implemented caching strategies to optimize code performance, reducing data retrieval times and minimizing server load, which significantly improved application efficiency and user experience.
+
+
+SASE Portal(node js, express , graphql)
+08/2022 - 09/2023
+ A WebApp that manages and render data from different web api based on customer need and requirements.
+- As a backend developer Manages the api resource by doing data manipulation based on requirements of client. 
+ At the end of the phase-1 in SASE portal, there were some unclear requirements because of which frequent changes in the client requirement , and I was doing the development along with rework in the already developed functionality within deadline. 
+ Developed a widely-used feature for uploading certificates in a GraphQL environment with limited file type support. Instructed the UI to send files as base64 strings, then implemented server-side logic to convert these strings to Blob and Buffer data. Created and managed temporary files securely, ensuring compliance with security standards while facilitating the upload process for all users.
+
+
+PSP Portal(JavaScript, react, typescript)
+06/2021 - 07/2022
+- We have developed a new UI for the client and replaced their Legacy System. Which enhances their work speed. 
+The client required reports in a PCI-compliant format, which initially seemed to necessitate maintaining duplicate code for both the UI and report generation. However, I implemented a solution that streamlined the process, reducing duplicate code by 100% and automating the task entirely. This approach ensured compliance while optimizing efficiency.
+Optimized the project by implementing code splitting and lazy loading to reduce initial load time and improve user experience. Additionally, employed debouncing techniques to enhance the performance of input handlers, minimizing unnecessary re-renders and ensuring smoother interactions.
+ At the time when the project was almost 80% completed, we observe a defect caused by the old code, which was forcing developers to do the manual work by changing options in the Jason which is lot of manual work to accomplish. So there I took responsibility and came with a new enhancement code that reduced our manual work up to 90%.
