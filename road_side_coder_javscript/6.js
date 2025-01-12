@@ -140,7 +140,8 @@ console.log(shape.perimeter());//NAN becoz in arrow function this refers to wind
 //what is Destructuring and renaming in objects?
 
 //Destructuring
-let user4={ name1:"Piyush",
+let user4={ 
+            name1:"Piyush",
              age:24 ,
             fullName :{
                 first:"tahir",
