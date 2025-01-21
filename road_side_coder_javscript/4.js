@@ -190,7 +190,7 @@ var f = modulePattern();
 f.publicMethod(10);
 
 //how to run funtion only once 
-//we can write polyfill of once
+//we can write polyfill of once (ran, apply)
 
                                                                                                                                             function once(func, context){
                                                                                                                                                 let ran;
@@ -209,7 +209,7 @@ f.publicMethod(10);
  hello(1,2);
  hello(1,2);
 
- //implement caching or memoize
+ //implement caching or memoize(cache , call)
 
  function complexMultiply(num1, num2){
     for(let i = 0 ; i < 1000000 ; i++){}

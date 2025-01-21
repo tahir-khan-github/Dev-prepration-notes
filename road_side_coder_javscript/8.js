@@ -130,9 +130,9 @@ function f() {
 
   //8)
   function checkPassword(success, failed){
- let pass = prompt("password","")
-    if(pass ===  "abc") success()
-    else failed()
+    let pass = prompt("password","")
+        if(pass ===  "abc") success()
+        else failed()
   }
 
   let userObj  = {

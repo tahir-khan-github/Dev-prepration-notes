@@ -86,7 +86,7 @@ console.log(add(3)(4)(7)(7)());
 //Partial application transforms a function into another function with smaller arity.
  
 
- //Write a function curry() that converts f(a,b,c) into a curried function f(a)(b)(c) .
+ //Write a function curry() that converts f(a,b,c) into a curried function f(a)(b)(c) .(args.length >= func.length)
  
                                                                                                                                                         function curry(func){
                                                                                                                                                             return function curriedFunc(...args){

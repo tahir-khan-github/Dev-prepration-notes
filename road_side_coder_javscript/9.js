@@ -15,6 +15,8 @@ console.log(message); //undefiend because js executes it in syncronus and at tha
 
 console.log("finish");
 
+//-----------------------------------------------//
+
 //can be fixed by using callbacks
 
 console.log("start");
@@ -29,6 +31,14 @@ importantAction("abcs", (message) => console.log(message)); //now when time reac
 
 console.log("finish");
 
+//-----------------------------------------------//
+
+function importantAction(username) {
+  setTimeout(() => {
+    return username;
+  }, 1000);
+}
+
 function func1(username, cb) {
   setTimeout(() => {
     cb(username);
@@ -40,7 +50,7 @@ function func2(username, cb) {
     cb(username);
   }, 1000);
 }
-
+// print messages after one another
 importantAction("abcs", (message) => {
   console.log(message);
   func1("cdew", (message1) => {
@@ -51,9 +61,9 @@ importantAction("abcs", (message) => {
   });
 }); // callbaclk hell, it  is a problem caused by deeply nested callbacks in asynchronous code,
 
-//fix the call back hell
+//-----------------------------------------------//
 
-//-------------------------promise chaining------------------
+//-------------------------promise chaining will fix call back hell------------------
 function importantAction(username) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
@@ -207,7 +217,7 @@ function job1(state){
 
 const prom1 = job1(true);
 
-prom
+prom1
     .then((res)=>{
       console.log(res)
 
@@ -230,7 +240,8 @@ prom
 
 
 //5.1)
-prom
+
+prom1
   .then((data)=>{
     console.log(data)
     return job1(true)
@@ -253,7 +264,7 @@ prom
     return new Error("test")
   }) 
   .then((res)=>{
-    console.log(res.message)
+    console.log("success: ",res.message)
   }) 
   .catch((err)=>{
     console.log(err)
@@ -273,7 +284,7 @@ prom
                                                                                                                                           async function loadJson1 (url){
                                                                                                                                             let res = await fetch(url);
                                                                                                                                             if(res.status === 200){
-                                                                                                                                              let json = await res.json
+                                                                                                                                              let json = await res.json()
                                                                                                                                               return json;
                                                                                                                                             }
                                                                                                                                             throw new Error(res.status)
@@ -295,8 +306,8 @@ prom
 
 //8)Promise ployfill 
 
-// async = Promise(creation) -> .then(initialization of cb) -> resolve(val)
-
+// async = Promise(creation) ->Attach then and catch handlers-> .then(initialization of cb) -> After 1 second, resolve(2) is called -> The then handler executes, logging
+// sync = Promise(creation) -> resolve(2) is called immediately -> Attach then and catch handlers
  function myPromise(miancb){
 
   let onResolve, onReject;
