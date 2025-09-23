@@ -1,3 +1,5 @@
+resume update with codeWithmik
+
 certificate upload - requirement for uploading certificate, but graphql doesnt support inbult file type, so I asked UI to send me the file in base64 string format
                     then I implemented the logic which will store the string in the file at server side and then send it versa,but again there is an issue that we can't store certificate physically as this will cause security risk, so I again added the logic which will convert the string to blob then to bufferdata and then write the data into a file which is created by tmp package and then send that file to versa
 
@@ -113,4 +115,17 @@ c)different modules of project
 
 7)Situational question?
 ->situational ques(if team going on leave and deadline is there how will you manage)
+
+
+
+
+mentioned -----
+codeStoreWithMik
+striver, tfu
+concept and coding
+codewithmik
+roadsidecoder
+engineering digest
+6packprogrammer
+devops
 

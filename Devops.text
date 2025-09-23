@@ -1,0 +1,436 @@
+Docker:
+-Docker allows developers to package applications and their dependencies into lightweight, portable units called containers.
+
+-Docker Images vs Docker Containers
+
+Image: Docker image contains(compiled source code, config and dependencies) along with environment configuration, application layer(js apps)
+        and services/tools(node, npm) require to run these apps.
+Container: A Docker container is a lightweight and isolated runtime environment that runs instances of image
+
+-Deployment Before and After Docker
+
+Before:
+Deployment = developers creates artifacts files(zip, jar) contianing code, config and dependencies and upload at artifact repository.
+Ops team had to download artifact files and configure servers for each app. which will also create problem due to dependency conflicts e.t.c
+ 
+After Docker:
+Deployment = just ship the Docker image containing(source code, config and dependencies) basically and artifact as in before.
+Ops runs docker run <image> → app starts immediately.
+
+-Docker vs Virtual Machine (VM)
+Docker contains only OS application layer on which application is installed and it uses hosts Kernel layer to  allocate resources to these applications
+images are in mb 
+containers starts in ms
+in the beginning Docker was compatible with only linux Os as it has linux based image and application layer & will try to use kernel of windows Os which will not work
+Now we have docker desktop for windows and mac as it creates a lightweight Linux VM using a hypervisor(diff for mac & Window), then This VM runs the Docker Engine to start container
+-------------
+Virtual machines has both OS application layer and kernel layer
+When we download VM image it boots up on its own and doesn't use Host 
+images are in GB and VM takes minutes to start
+VM is compatible with any OS(on windows i can ran a linux VM)
+
+-Public and Private Registry
+
+Public Registry: Docker Hub (default) → free to pull images like nginx, mysql, etc.
+Private Registry: Secure registry (AWS ECR, GitHub Container Registry, Harbor, self-hosted) → stores company’s internal images.
+
+Docker command:
+docker pull image:tag //download image from docker hub
+docker run image:tag //starts contianer with image
+docker run -p <host-port>:<container-port> <image> // port binding
+docker ps   //list active container
+docker ps -a   //list all container
+docker stop <container-id> //stop the container
+docker start <container-id> //start existing container
+docker container prune  //removes unused container
+docker run --cpu 2 --memory 1g mycontainer   //makes the container to use on 2 cpu cores and 1gb memory
+docker logs <container-id>                  //debugging 
+
+Port binding:
+binding the port of hosts with port of docker continer, so that services running inside the container can be accessed from outside.
+
+-Create own docker image
+Dockerfile will build the docker image , then using that image we run docker container
+
+Dockerfile:A text file with command and instructions to build image
+-------------------------------
+FROM node:19-alpine //base image containing npm and node
+
+COPY package*.json /usr/app/        //copying package.json for dependencies into Docker container folder -> /usr/app/
+
+COPY src /usr/app/                  //copying src code folder into dockder folder
+
+WORKDIR /usr/app                    //makiing it a default directory so that commands can run on it
+
+RUN npm install                     //installing the dependencies inside docker folder
+
+CMD ["node", "server.js"]           //default command to be executed when a container is started from the Docker image. 
+----------------------------------
+docker build -t node-app:1.0 .           // command to build the image using docker file instructions
+docker images                            //show list of images
+docker run -d -p 3000:3000 node-app:1.0  // run the container with binding its port to 3000 with image as node-app:1.0
+
+Flow:
+
+developed app(commit and push) -> Git (trigger ci pipeline) -> gitlab(build the image and store in private repository) -> deployement server(will pull the image and run it) -> code deployed
+
+
+Docker volumes can be used for persistent storage. They are managed by Docker and can be attached to one or more containers
+
+The amount of containers that may be run under Docker has no explicitly specified limit. It depends on The size of the program and the number of CPU resources
+
+Dockerfile can be optmized by using smaller base image, using multi-stage builds to exclude unnecessary files from the final image.  
+multi-stage build can be done using multiple FROM each representing a different build stage and intermediate build artifacts can be copied between stages using the COPY --from
+
+
+Teraform:
+Instead of manually creating servers, networks, or databases in cloud consoles (AWS, Azure, GCP, etc.), 
+Terraform lets you write code that describes your infrastructure, and then it automatically provisions it.
+---------------------------------------------------------------------------------------
+
+Interview Questons:
+
+Why we use docker?
+diff b/w docker container and virtual machines?
+how to remove unsused docker contianer?
+how to store persistent data in docker container?
+Is there any limit on how many containers can you run on docker?
+How do you limit the CPU and memory usage of a Docker container?
+What is Dockerfile and how is it used in Docker?
+What is the purpose of the CMD instruction in a Dockerfile?
+How do you debug issues in a failing Docker container?
+how to optimized a Dockerfile?
+How do you update a Docker container without losing data?
+what is terraform?
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+Gitlab:
+
+Unit - 1 (Introduction) :
+
+pipeline : set of jobs organised in stages
+
+Yaml - YAML is superset of JSON, meaning any JSON file is also valid YAML, but it is more readable than json. Syntax is different than json & contains indentation
+
+CI - Continous integration
+     Mutliple developers working on same repository CI is the pipeline that allows us to add chnages multiple times and what comes out is the new version of the product
+
+Architecture of gitlab:
+-it contains the GitLab Server & GitLab Runner
+-GitLab server manages the execution of the pipeline and its jobs and stores the results
+-when a job needs to be executed, the GitLab server will find a runner to run the job, there can be multiple runners to distrubute the load
+flow :
+-the GitLab server locates a GitLab Runner and sends instructions for running the job
+-GitLab Runner will pull the Docker image specified in the job configuration 
+-GitLab Runner will start the Docker container
+-GitLab Runner will get the files stored in the Git repository
+-GitLab Runner run the commands from the script keyword inside the Docker container
+-GitLab Runner report back to the GitLab server  the results of the job execution
+-GitLab Runner will terminate the Docker container
+------------------------------------------------------------------------------------------------------------
+Unit - 2 (CI - Continous Integration) (gets triggered via git command)
+build laptop:                                   //job
+    image: alpine                             //docker image
+    script:                                   //where we write commands
+        - echo "Building a laptop"           // to print some thing
+        - mkdir build                       //creates a new folder called build
+        - touch build/computer.txt          //creates a new file called file.txt
+        - echo "Mainboard" >> build/computer.txt // >> appends the output from a previous command to a file 
+        - cat build/computer.txt                //can be used for displaying the contents of a file
+        - echo "Keyboard" >> build/computer.txt
+        - cat build/computer.txt
+
+-------------------------------------------------------------------------------------------------------------
+stages:                                         //it will decide the sequeunce of stages containing one or more jobs
+    - .pre                                      // we put jobs that doen't have dependencies
+    - build                                     // build jobs will be added
+    - test                                      //test jobs will be added
+
+build website:
+    image: node:16-alpine                       //node image to support npm commands that is going to run in script
+    stage: build
+    script:
+        - yarn install
+        - yarn build
+    artifacts:                                  // to store the result of build job back to gitlab server so that other stage can process it
+        paths:
+            - build
+
+test website:
+    image: node:16-alpine
+    stage: test
+    script:
+        - yarn global add serve
+        - apk add curl
+        - serve -s build &
+        - sleep 10
+        - curl http://localhost:3000 | grep "React App" //curl  will download content from localhost and grep will search for keyword
+
+unit tests:
+    image: node:16-alpine
+    stage: .pre
+    script:
+        - yarn install
+        - yarn test
+
+linter:
+    image: node:16-alpine
+    stage: .pre
+    script:
+        - yarn install
+        - yarn lint
+
+--------------------------------------------------------------------------------------------------------------
+Unit 3 - (CD - Continuous Deployment):
+    we will use AWS S3 to store the public files and serve them over HTTP
+    AWS S3 files (which AWS calls objects) are stored in buckets
+    the AWS console allows us to manually upload files through the web interface
+    to interact with the AWS cloud services, we need to use a CLI tool called AWS CLI
+   
+-----------------------------------------------------------
+-deploying single file to s3 for testing
+
+deploy to Production:
+    stage: deploy                               
+    image:                                                       //to integrate AWS CLI with gitlab pipeline we need aws image 
+        name: amazon/aws-cli:2.4.11                              //syntax
+        entrypoint: [""]
+    script:
+        - aws --version                                         //to print version
+        - echo "Hello S3" > test.txt                            //to create a file
+        - aws s3 cp test.txt s3://$AWS_S3_BUCKET/test.txt       //cp command will copy the test file into s3 location(s3://$AWS_S3_BUCKET/test.txt )
+                                                                //$AWS_S3_BUCKET is a variable that's been stored in the gitlab ci/cd settings
+
+ -----------------------------------------------------------                                                           
+- deploying multiple file from build folder which is generated after build job is doen
+
+deploy to Production:
+    stage: deploy
+    image: 
+        name: amazon/aws-cli:2.4.11
+        entrypoint: [""]
+    rules:                                                      //to set a condition and to decide which jobs to run
+        - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH         // gitlab variables, $CI_COMMIT_REF_NAME - tells current branch, $CI_DEFAULT_BRANCH  - tells default branch(main or master)
+
+    script:
+        - aws --version
+        - aws s3 sync build s3://$AWS_S3_BUCKET --delete        //sync is same as cp command, delete command will automatically delete files which gets deleted in build
+                                                                //but before copying content to s3 aws needs access key and password which it automatically gets from aws variables stored in settings
+
+------------------------------------------------------------
+CD can refer to two concepts:
+
+Continuous Deployment - where every change is automatically deployed to production
+Continuous Delivery - where every change is automatically deployed to staging but where we need some manual intervention to deploy to production
+                     -A staging environment is a non-production, usually non-public environment that is indeed identical production environment
+                     -In gitlab we can define environments in Deployments > Environments
+
+
+stages:
+    - build
+    - test
+    - deploy staging
+    - deploy production
+
+
+deploy to staging:
+    stage: deploy staging
+    environment: staging                                    // defined in  Deployments > Environments
+    image: 
+        name: amazon/aws-cli:2.4.11
+        entrypoint: [""]
+    rules:
+        - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH     //works only when code is pushed to main/master
+    script:
+        - aws --version
+        - aws s3 sync build s3://$AWS_S3_BUCKET --delete
+--------------------------------------------------------------
+
+-staging and production is using similar configuration, so we can simplify them by reusing configuration
+
+.deploy:
+    image: 
+        name: amazon/aws-cli:2.4.11
+        entrypoint: [""]
+    rules:
+        - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH     //works only when code is pushed to main/master
+    script:
+        - aws --version
+        - aws s3 sync build s3://$AWS_S3_BUCKET --delete
+
+- now
+
+deploy to staging:
+    stage: deploy staging
+    environment: staging                                
+    extends: .deploy
+
+deploy to production:
+    stage: deploy production
+    environment: production                                
+    extends: .deploy
+
+------------------------------
+deploy to production:
+    stage: deploy production
+    when: manual                                       //adding when: manual allows us to manually trigger the production deployment
+    environment: production
+    extends: .deploy
+
+----------------------------------------------------------------------------------------------------------------
+Unit 4 - ( Deploying a dockerized application to AWS) :
+
+-when we use any cloud service we rent a virtual server to run our application and can choose desired OS, but we need to manage cpu, storage and make sure everything is updated
+so that our app can work seemlessly
+-AWS Elastic Beanstalk (AWS EB) is a service that allows us to deploy an application in the AWS cloud without having to worry about managing the virtual server(s) that runs it
+-AWS EB will use two AWS services to run the application:
+    -EC2 (virtual servers)
+    -S3 (storage)
+-modern applications tend to be more complex, and most of them use Docker,so we will build & deploy an application that runs in a Docker container
+    - build docker image    
+    - add image gitlab private docker container registry
+    - aws authenticate with deploy token and then pull the image from gitlab private docker container registry
+-------------------------------------------
+DockerFile:
+FROM nginx:1.20-alpine
+COPY build /usr/share/nginx/html
+-------------------------------------------
+building our own image & pushing to gitlab private container registry:-
+
+build docker image:
+    stage: package
+    image: docker:20.10.12      //image to use docker command
+    services:
+        - docker:20.10.12-dind  // we need to docker in docker service so that docker demon can build the image
+    script:
+        - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin //login to gitlab private container registry
+        - docker build -t $CI_REGISTRY_IMAGE -t $CI_REGISTRY_IMAGE:$APP_VERSION .   //this will hit docker server(docker demon which will build the image) these -t $CI_REGISTRY_IMAGE -t $CI_REGISTRY_IMAGE:$APP_VERSION are image tags to identify created image, . refernce to docker file in curr fodler
+        - docker image ls           //to show list of created images
+        - docker push --all-tags $CI_REGISTRY_IMAGE     //push the image to gitlab private container registry
+---------------------------------------------
+Deploy: upload manifest file(tells which docker image we want to deploy) to s3 , from there EB will fetch it
+
+deploy to production:
+    image:
+        name: amazon/aws-cli:2.4.11         //aws image to use aws commands
+        entrypoint: [""]
+    stage: deploy
+    variables:
+        APP_NAME: My website                //application name of elasticbeanstack
+        APP_ENV_NAME: Mywebsite-env         //environment name of elasticbeanstack
+    environment: production
+    script:
+        - aws --version
+        - yum install -y gettext                                                    //to use envsubst command we need to install this
+        - export DEPLOY_TOKEN=$(echo $GITLAB_DEPLOY_TOKEN | tr -d "\n" | base64)    // convert gitlab deploy token(s3 will use to access gitlab private registry) to base6d
+        - envsubst < templates/Dockerrun.aws.json > Dockerrun.aws.json              //replaces environment variables inside json file
+        - envsubst < templates/auth.json > auth.json                                //replaces environment variables inside json file
+        - cat Dockerrun.aws.json                                                    
+        - cat auth.json                                                             // to see the content of the file
+        - aws s3 cp Dockerrun.aws.json s3://$AWS_S3_BUCKET/Dockerrun.aws.json       //copying this json file to aws s3
+        - aws s3 cp auth.json s3://$AWS_S3_BUCKET/auth.json                         ////copying this json file to aws s3
+        
+        //deploying to elasticbeanstack, first we take Dockerrun file to create new application version, with applicatio name, app version and the location of s3bucket to pick Dockerrun file
+        - aws elasticbeanstalk create-application-version --application-name "$APP_NAME" --version-label $APP_VERSION --source-bundle S3Bucket=$AWS_S3_BUCKET,S3Key=Dockerrun.aws.json
+       // to which environment we want to update the version
+        - aws elasticbeanstalk update-environment --application-name "$APP_NAME" --version-label $APP_VERSION --environment-name $APP_ENV_NAME
+
+-------------------------------------------------------------
+Interview questions:
+
+what is ci/cd?
+what is the Architecture of gitlab?
+how we write pipeline in gitlab?
+how to deploy manually?
+how store the result of job?
+how can we limit pipeline to trigger only on default branch, how to trigger pipeline manually?
+how can we build our own docker image and send it to aws?
+
+-------------------------------------------------------------------------------------------------------------------------------------------------
+
+AWS:(Gaurav sharma)
+
+Cloud watch: (monitoring service)
+- it monitors servers and notify alert incase of any issue
+- based on set of instructions it will notify about traffic surge, cpu usage
+- it monitors all the aws services like ec2, s3 e.t.c
+-------------------
+cloudwatch > metircs > allmetrics
+namespace - its name of the service(aws/ec2, aws/s3)
+metircs - the things that server is utilizing(cpu utilizatoon, networkin, diskreadbytes)
+-------------------
+Detailed monitoring
+instance Ec2> monitoring > manage detailed monitoring
+-------------------
+Custom dasboard (visualization of namespace and metrics)
+cloudwatch > dashboard > create customDashboard > add widget(select type of graph > select type of service)
+-------------------
+Add alarm (to send alert)
+cloudwatch > alarms > all alarms > create alarm > select metric > add required config > alarm will go to sns topic > subscribers subscribed to topic will get alert
+
+cloudwatch agent:
+create EC2 instance, attach awsagent IAM role(gives permission to agent to send logs to CW), install CW agent using documentation, configure it(where it ask for CW agent and file path to where it will monitor), start Cw agent
+create logger.js file in nodejs app, use winston in logger.js to createloggers(info, debug, err)
+
+cloudwatch logs:
+loggroup : we create log group to watch logs (int-safe.logs) and this will be created while creating CW agent(how to createloggroup seperately about environment)
+liveinsight : we write query to filter logs of a loggroup, using generate query(prompt)
+
+create EC2 instance, attach awsagent IAM role(gives permission to agent to send logs to CW), install CW agent using documentation
+
+--------------------------------------------------------------------------
+AWS lambda:
+its a serverless service, we just execute our code without thinking about server
+create lambda, attach role, write and deploy code
+event is an lambda object which has all the information, its details will be based on the api call
+hot and cold start:
+when lambda function starts for the first time it creates and starts an execution environment(takes time) & executes code(cold start)
+later on when other events happens it runs it in the same execution environment to save time (hot start)
+when request comes to lambda at same time the new execution context will be created, and limit of this execution context is 50.
+genral configuration > snapstart : store the snap of initialization during lambda start, and later use it for next start which saves time
+-----------
+synchronus vs asynchronus invocation:
+synchronus > client -> lambda function > return response to client
+asynchronus client -> event queue -> lambda function > return response to event queue -> return response to client
+        (--invocation-type Event)cmd
+incase of failure, event queue will retry til given retry number, then it push it to dead-letter queue(amazon SQS, SNS)
+lambda-function file and function name can be change from runtimesettings, 
+create zip of repo and upload at lambda
+
+Layers: we add common dependencies, util functions into lambda layers, then this layer can be added into multiple lambda functions then it will use those dependencies and utils
+
+Versions: lambda > version, publish version (included codes, dependencies, env variable, setting and unique arn for this version) - its immutable
+alias: its a pointer to specific version, we can change the pointer instead of version itself in the code,
+         we can devide traffic on to version using alias weight(blue green deployment)
+
+what is flow in repo, from code push to lambda
+-----------------------------------------------------------------------------
+Aws Api gateway:
+In microservice architecture client will send request to microservice based on the need(like order request will go to order) & inorder to do that client needs to have all the info about the microservices
+So APi gateway is introduced to take care of this it will route the request to specific microservice, also we can add common functions of microservice there(like authentication, authorization, monitoring) also it does ratelimiting and loadbalancing 
+
+Rest api: create resource (/services) , create method (get, put, post)
+Api Gateway to lambda routing: create method > add lambda arn
+
+Method Request:
+api validation can be implemented at api gateway level, becoz we want to save lambda execution which saves money
+resource > api > method request > select request validator type and add required fields for (request, header, body)
+
+Integration Request:
+request comes from client, we can modify(queryparam, header, body(disable proxy)) this request before it goes to server
+if select lambda with non proxy then the event will be empty and we need to add all the details in the template mapping
+
+Integration response:
+edit the response before sending back to client
+
+Authentication api gateway:
+AWS signature: create IAM user then create its access and secret key , then pass them in AWS Signature of postman, this signature will be created using these access and secret keyword
+api secret key: 
+                Api gateway > api keys > create api key > add usage plan
+                Api gateway > usage plan > create usage plan, associate stage , add stage
+                pass this key in headers
+Custom authorization: 
+                client -> api gateway -> auth lambda(decide wethere request will go to further lambda) -> other lambda functions
+                create a auth lambda which will have auth code
+                Api gateway > authrizer , create authrizer(attach auth lambda)
+                Api gateway > api > request method > add custom authorizer

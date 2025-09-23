@@ -1,0 +1,27 @@
+Version control system that manages and tracks code changes done by multiple develpers, returning a new version of the project
+
+commands:
+
+git init - convert a repo into git repo
+git status - to check which files are tracked and untracked
+git branch : list of all old branches
+git branch --all : list of all new branches
+git add. - add all the files to tracked stage
+git commit -m : record the changes that needs to be pushed
+git commit -am : add to stage and  record the changes that needs to be pushed
+git switch -c branch_name : create a branch from curr branch and switch to it
+git push : push local changes to remote
+git pull : pull remote changes to local
+git switch - : move to last checked out branch
+git merge master : merge master into feature
+git merge feature : merge feature into master
+git rebase master : merge master changes into feature without new commit
+git rebase feature : merge feature changes into master without new commit
+git log --oneline : shows all commits 
+git commit -ammend : add curr changes to prev commit
+git stash : save files temporarily in Working directory
+git stash list : shows the list of stashed index
+git stash pop: bring the stashed changes back
+git revert commitname :  create new commit with reverting the changes(but commit history will not be removed)
+git reset --soft Head: last commit will get reverted and changes will gets added back to staging (commit history will be removed)
+git reset --mixed Head: ast commit will get reverted and changes will gets added back to unstaging (commit history will be removed)

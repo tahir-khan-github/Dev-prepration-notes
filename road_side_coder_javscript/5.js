@@ -103,6 +103,8 @@ console.log(add(3)(4)(7)(7)());
 const sum = (a,b,c,d)=> a+b+c+d;
 
 const totalSum = curry(sum);
-
+console.log(totalSum(1,2,3,4)) //all arguments in 1 go so if full fills
+console.log(totalSum(1)(2,3,4))
+console.log(totalSum(1)(2)(3,4))
 console.log(totalSum(1)(2)(3)(4))
 

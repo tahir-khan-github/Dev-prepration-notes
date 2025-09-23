@@ -31,31 +31,32 @@ console.log(func); //5 becoz delete keyword works on object only
 
 //How can you access a multiword key of an object?
 
-let user1 = { name: "Roadside Coder",
-             age: 24,
-             "interview time": true
-            };
-console.log(user1["interview time"]);
+   let user1 = {
+     name: "Roadside Coder",                                                                                                                                                 
+   age: 24,                                                                                                                                                             
+   "interview time": true                                                                                                                                                            
+           };                                                                                                                                                          
+                                                                                                                                                                   console.log(user1["interview time"]);                                                                                                                                              
 
 
 // delete delete user["like the video"];
 
 //adding dynamic property to object
 
-let property = "firstName";
-let name = "tahir khan"
+                                                                                                                                                                let property = "firstName";
+                                                                                                                                                                let name = "tahir khan"
 
-let user2 = {
-    [property]:name,
-}
+                                                                                                                                                                let user2 = {
+                                                                                                                                                                    [property]:name,
+                                                                                                                                                                }
 
 console.log(user2);
 
 //how to iterate throough object
 
-for(key in user1){
-    console.log(user1[key]);
-}
+                                                                                                                                                    for(key in user1){
+                                                                                                                                                        console.log(user1[key]);
+                                                                                                                                                    }
 
 //Interview Question
 
@@ -64,7 +65,8 @@ const obj = {
      b: 'two',
       a: 'three'
      }; 
-console.log(obj);//incase of similar key last key's value will be considered
+console.log(obj);
+                                                                                                                                                    // { a: "three", b: "two" }incase of similar key last key's value will be considered
 
 
 //Create a function ```multiplyByTwo(obj) that multiplies all numeric property values of obj by 2.**
@@ -74,13 +76,13 @@ let nums = {
     title: "My nums"
      };
 
-                                                                                                                                        function multiplyByTwo(obj){
-                                                                                                                                            for(key in nums){
-                                                                                                                                                if(typeof nums[key] === "number"){
-                                                                                                                                                    nums[key] = nums[key] * 2;
-                                                                                                                                                }
-                                                                                                                                            }
-                                                                                                                                        }
+                                                                                                                                                    function multiplyByTwo(obj){
+                                                                                                                                                        for(key in nums){
+                                                                                                                                                            if(typeof nums[key] === "number"){
+                                                                                                                                                                nums[key] = nums[key] * 2;
+                                                                                                                                                            }
+                                                                                                                                                        }
+                                                                                                                                                    }
 
 multiplyByTwo(nums);
 console.log(nums);
@@ -93,8 +95,8 @@ const c = { key: 'c' };
 a[b] = 123;
 a[c] = 456;
 
-console.log(a[b]);//456 
-//becoz when we try to assign object as a key it converted to a["[object object]"] = 123, a["[object object]"] = 456 and it takes last value of a key
+                                                                                                                                                        console.log(a[b]);//456 
+                                                                                                                                                        //becoz when we try to assign object as a key it converted to a["[object object]"] = 123, a["[object object]"] = 456 and it takes last value of a key
 
 
 // What is JSON.Stringify and JSON.parse?
@@ -113,6 +115,8 @@ console.log(JSON.parse(localStorage.getItem("items")));
 
 //what is the output? of
 console.log([..."lydia"])
+                                                                                                                                                        [ 'l', 'y', 'd', 'i', 'a' ]
+                                                                                                                                                        //The spread operator (...) expands the string into an array of its characters.
 
 // What's the output?
 const user3 = { name: 'Lydia', age: 21 }; 
@@ -182,14 +186,14 @@ console.log(d.greeting); // Hello becoz variable only refer to obj
 
 //2)
 console.log({a:1} == {a:1}); //== losse, === strict
-console.log({a:1} === {a:1}); //false becuase both objects have different memory adresses
+//console.log({a:1} === {a:1}); //false becuase both objects have different memory adresses & in js objects are always compared with reference
 
 //3)
 let person = { name: 'Lydia' };
 const members = [person];
 person = null;
 
-console.log(members);//{ name: 'Lydia' } becoz objects address is stored in [0]idx
+console.log(members);//{ name: 'Lydia' } becoz objects address is stored in [0]idx & person is storing the address only
 
 // person.name = " ";
 console.log(members);// { name: " "} becoz now objects been modified itself
@@ -202,8 +206,8 @@ const multiply = (x = { ...value }) => {
   console.log((x.number *= 2));
 };
 
-multiply();//20 { ...value }(default value untill we didn't pass) ... cloned the object into x so current val will be 20
-multiply();//20 again changes happen in cloned object
+multiply();//20 { ...value }(default value untill we didn't pass) ... cloned the object into x , means doen't have any reference of value obj
+multiply();//20 again as  doen't have any reference of value obj
 multiply(value);//20 now here referenece of object is passed to x and it will modify objects value
 multiply(value);//40 again reference of obj which is already been modified
 

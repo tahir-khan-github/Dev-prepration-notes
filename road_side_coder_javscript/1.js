@@ -23,7 +23,7 @@ function test(){
     }
     console.log(a);
 }
-test();// var -> let shadowing is allowd but not vice versa and is called as illegal shadowing.
+test();// var -> let shadowing is allowd but let to var is not allowed and is called as illegal shadowing.
 
 //2)Declaration
 "1) redeclaration in the same 'scope' is allowed only for var.  let and const cannot be redeclared in the same 'scope'"
@@ -32,6 +32,7 @@ test();// var -> let shadowing is allowd but not vice versa and is called as ill
 
 //js exexution context has 2 phases 
 //1)creation phase - it creates all the variables and functions in the memory and assign undefined to variable and function to a function
+//                   inside a widnow object
 //2)execution phase - it executes the code line by line , assign values to variables and execute functions
 
 

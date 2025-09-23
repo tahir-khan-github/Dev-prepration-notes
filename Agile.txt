@@ -1,0 +1,41 @@
+Agile:  its a practice/method to implement day to day task in software development
+        it has:
+    sprint: A time interval in which task needs to be completed usually 2 weeks
+    story point: number of days to complete task
+    sprint-planning meeting :planning of what all features we are going to deliver and how we do it
+    program increment planning: planning of what all is expected to deliver in quarter
+    daily-standup: what i did yesterday and what I am going to do today.
+    retrospective meeting: what all we did in the sprint and tell problems
+    spike : stories which has no clear understanding needs R&D
+
+
+1) What will you do if new requirements comes up in b/w sprint?
+-understand the priority of the takes
+-understand the requirement
+-if small then do in the same sprint else move it to next sprint, meanwhile discussin the appraoch in scrum
+
+2) what happened if all task not able to complete in a sprint?
+-understand the reasons, it could be underestimation, blocker(unplaned leave)
+
+I suggested scrum master to have a buffer in sprint so that these adhoc works can be managed
+
+3) Two developers conflict on a soluton how do you resolve it?
+-encourage data driven discussion
+-suggest for small poc
+-envolve scrum master or senior
+
+there was a task regarding file download, so debate started on FE will do or BE will do, BE were saying Graphql doesn't support data type as file 
+so I suggested FE to provide me the file in base64 and then i'll convert and upload to another server
+
+4)Product owner keeps adding new task in middle of the sprint, how do you handle it?
+-add the task in the backlog
+-if persist explain tradeoff that curr task will hamper & we should also stick to sprint plan
+
+I said i can pick up this task and work on two features simultaneously, but the quality that we expected and the result of the feature will hamper
+what we can do for now is we can do all the plannings in the scrum call, and in the next sprint task can be executed and planning time will be saved
+
+5)what should we do if same problems comming up in retrospective call?
+-convert problem into actionable item 
+- assign owner and keep track record of it
+
+

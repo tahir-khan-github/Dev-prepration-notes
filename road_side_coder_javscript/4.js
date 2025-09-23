@@ -58,11 +58,12 @@ let count = 0;
 
 function printCount(){
     if(count == 0){
+
         let count = 1;
-        console.log(count);                                                                                                             // 1 beocz of variable shadowing
+        console.log(count);                                                                                                                           // 1 beocz of variable shadowing
     }
 
-    console.log(count);                                                                                                                  // 0 because of closure
+    console.log(count);                                                                                                                                  // 0 because of closure
 }
 
 //--------------------------
@@ -119,7 +120,7 @@ console.timeEnd("12");
 //------block scope and settime out ----important---
 
 function a(){
-    for(var i = 0 ; i < 3 ; i++){
+    for(var i = 0 ; i < 4 ; i++){
         setTimeout(() => {
             console.log(i);
         }, i * 1000);
@@ -149,22 +150,22 @@ c();// 0, 1 ,2 every time new func block has been created and for every block i 
 //-------------------------------------------------------------
 //how to use closure to create private counter == counter can be moidfied without acessing it
 
-                                                                                                                                                function privateCounter(){
-                                                                                                                                                    var _counter = 0;
+                                                                                                                                                        function privateCounter(){
+                                                                                                                                                            var _counter = 0;
 
-                                                                                                                                                    function add(num){
-                                                                                                                                                        _counter += num;
-                                                                                                                                                    }
+                                                                                                                                                            function add(num){
+                                                                                                                                                                _counter += num;
+                                                                                                                                                            }
 
-                                                                                                                                                    function retrieve(){
-                                                                                                                                                        return "counter - > "+ _counter;
-                                                                                                                                                    }
+                                                                                                                                                            function retrieve(){
+                                                                                                                                                                return "counter - > "+ _counter;
+                                                                                                                                                            }
 
-                                                                                                                                                    return {
-                                                                                                                                                        add,
-                                                                                                                                                        retrieve
-                                                                                                                                                    }
-                                                                                                                                                }
+                                                                                                                                                            return {
+                                                                                                                                                                add,
+                                                                                                                                                                retrieve
+                                                                                                                                                            }
+                                                                                                                                                        }
 
 const e = privateCounter();
 e.add(5);
@@ -174,17 +175,17 @@ console.log(e.retrieve());
 // what is module pattern? 
 // a way of using private function without acessing it like above
 
-                                                                                                                                                function modulePattern(){
-                                                                                                                                                    function privateFun(value){
-                                                                                                                                                        console.log("private function", value)
-                                                                                                                                                    }
+                                                                                                                                                        function modulePattern(){
+                                                                                                                                                            function privateFun(value){
+                                                                                                                                                                console.log("private function", value)
+                                                                                                                                                            }
 
-                                                                                                                                                    return {
-                                                                                                                                                        publicMethod: function(a){
-                                                                                                                                                            privateFun(a);
+                                                                                                                                                            return {
+                                                                                                                                                                publicMethod: function(a){
+                                                                                                                                                                    privateFun(a);
+                                                                                                                                                                }
+                                                                                                                                                            }
                                                                                                                                                         }
-                                                                                                                                                    }
-                                                                                                                                                }
 
 var f = modulePattern();
 f.publicMethod(10);
@@ -192,17 +193,17 @@ f.publicMethod(10);
 //how to run funtion only once 
 //we can write polyfill of once (ran, apply)
 
-                                                                                                                                            function once(func, context){
-                                                                                                                                                let ran;
-                                                                                                                                                    return function(){
-                                                                                                                                                        if(func){
-                                                                                                                                                            ran = func.apply(context || this, arguments);
-                                                                                                                                                            func = null;
-                                                                                                                                                        }
+                                                                                                                                                    function once(fn, context){
+                                                                                                                                                        let ran;
+                                                                                                                                                            return function(){
+                                                                                                                                                                if(func){
+                                                                                                                                                                    ran = func.apply(context || this, arguments);
+                                                                                                                                                                    func = null;
+                                                                                                                                                                }
 
-                                                                                                                                                        return ran;
+                                                                                                                                                                return ran;
+                                                                                                                                                            }
                                                                                                                                                     }
-                                                                                                                                            }
 
  const hello = once((a,b)=> console.log("hello",a,b));
  hello(1,2);

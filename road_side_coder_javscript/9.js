@@ -33,9 +33,9 @@ console.log("finish");
 
 //-----------------------------------------------//
 
-function importantAction(username) {
+function importantAction(username, cb) {
   setTimeout(() => {
-    return username;
+    cb(username);
   }, 1000);
 }
 
@@ -153,7 +153,7 @@ promise1.then((res)=>{
     console.log(err)
 })
 
-console.log("end")                                                                                                                      //start 1 end 2
+console.log("end")                                                                                                                                  //start 1 end 2
 
 //2)
 console.log("start")
@@ -170,7 +170,7 @@ promise1.then((res)=>{
     console.log(err)
 })
 
-console.log("end")                                                                                                                        //start 1 3 end 2
+console.log("end")                                                                                                                                   //start 1 3 end 2
 
 //3)
 console.log("start")
@@ -236,7 +236,7 @@ prom1
     .catch((err)=>{
       console.log(err)
     })  
-                                                                                                                                           //success , error, error caught
+                                                                                                                                                          //success , error, error caught
 
 
 //5.1)
@@ -269,7 +269,7 @@ prom1
   .catch((err)=>{
     console.log(err)
   })
-                                                                                                                                          //success, Defeat, error, error caught, Sucess: test
+                                                                                                                                                         //success, Defeat, error, error caught, Sucess: test
 
 //6)convert to async await
     function loadJson (url){
@@ -281,14 +281,14 @@ prom1
 
     loadJson("asdasd").catch((err)=>console.log(err))
 
-                                                                                                                                          async function loadJson1 (url){
-                                                                                                                                            let res = await fetch(url);
-                                                                                                                                            if(res.status === 200){
-                                                                                                                                              let json = await res.json()
-                                                                                                                                              return json;
-                                                                                                                                            }
-                                                                                                                                            throw new Error(res.status)
-                                                                                                                                          }
+                                                                                                                                                      async function loadJson1 (url){
+                                                                                                                                                        let res = await fetch(url);
+                                                                                                                                                        if(res.status === 200){
+                                                                                                                                                          let json = await res.json()
+                                                                                                                                                          return json;
+                                                                                                                                                        }
+                                                                                                                                                        throw new Error(res.status)
+                                                                                                                                                      }
 
 
 //7)resolve multiple promisses recursively
@@ -308,7 +308,7 @@ prom1
 
 // async = Promise(creation) ->Attach then and catch handlers-> .then(initialization of cb) -> After 1 second, resolve(2) is called -> The then handler executes, logging
 // sync = Promise(creation) -> resolve(2) is called immediately -> Attach then and catch handlers
- function myPromise(miancb){
+ function myPromise(executer){
 
   let onResolve, onReject;
   let isResolved, isReject, isCalled = false, value;
@@ -349,7 +349,7 @@ prom1
   }
 
   try {
-    miancb(resolve, reject)
+    executer(resolve, reject)
   } catch (error) {
       console.log(error)
   }
