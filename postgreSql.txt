@@ -1,0 +1,275 @@
+Database : An organised collection of data.
+DBMS : A software that helps us to manage databases (postgre)
+RDBMS : A type of database system that stores data in structured tables 
+SQL : Structured query language
+PostgreSql :  A software that uses SQL as a language to manage database
+
+dB -> outer layer(insta db), schema -> subcategory(post and filter) , tables 
+
+
+Queries:
+
+Database:
+SELECT datname FROM pg_database; // list of all db
+CREATE DATABASE <db_name>; // create db
+DROP DATABASE <db_name>; // disconnect first then delete
+
+cmd cli:
+\l : list of all db
+\c dbname : connect particualr db to server
+
+------------------------------------------------------------------
+Tabels:
+
+CREATE TABLE person (id INT, name VARCHAR(100), city VARCHAR(50)) // create table with provided columns
+INSERT INTO students (id, name) VALUES (101, "Rahul") // inset data into table  // one row data
+INSERT INTO customer (cust_name) VALUES ('Raju'), ('Sham'), ('Paul'), ('Alex'); //multiple row of same column insertion
+SELECT * FROM <table_name> // read all data from table
+Select <col name> From <table name> // read selected columns from table
+UPDATE <table_name> SET column_1 = new_value_1, column_2 = new_value_2, WHERE condition; //update a table
+DELETE FROM <table name> WHERE conditions;
+DROP TABLE table_name [CASCADE | RESTRICT]; // CASCADE : drop all dependents like views and foreign key, RESTRICT(Default) : Prevents dropping the table if any dependent objects exist
+
+----------------------------------------------------------------
+DataTypes:
+
+Numeric - INT DOUBLE FLOAT DECIMAL 
+String  - VARCHAR 
+Date    - DATE
+Boolean - BOOLEAN
+SERIAL  - Integer value that gets added as Auto incremented value to the column
+
+Constraints: (rules for columns)
+
+PrimaryKey : this Constraint uniquely identify each record, it should be unique and not null, there will be only one PrimaryKey
+NOT NULL : column should not be null
+Default "value" : put the default value of column
+Unique : column value should be unique
+
+Create table employee (id SERIAL PRIMARY KEY, fname varchar(20) NOT NULL, Department varchar(20) Default 'IT', Salary Decimal(10,2) , email varchar(50) unique, date DATE CURRENT_DATE);
+
+-----------------------------------------------------------------
+Clauses:
+
+Where is used with relational operators( =, > , < ) , logical (and, or, not in, in) // conditions
+Distinct // return unique value of the column
+Order By // sorting data of a column
+Limit // decide number of result
+Like A%, %A%, %A, _A //pattern matching in the value
+Group By // group the records based on common property
+Having // whenever we need to add condition with GROUP BY we use this
+
+-----------------
+Aggregate function: (used for evaluation)
+
+count(col_name) //count total record
+avg(col_name) //avg total record
+max(col_name) //max total record
+min(col_name) //min total record
+sum(col_name) //sum total record
+
+find total number of employee?
+find employee with max salary?
+find average salary of employee?
+
+-----------------
+String functions // used to manipulate column values
+
+CONCAT(col_name1, col_name2), CONCAT_WS(' ',col_name1, col_name2) 
+
+SUBSTR(col_name, idx1, idx2) : returns substring value
+TRIM(col_name) : remove extraspace
+
+Upper(col_name) : convert to uppercase
+lower(col_name) : convert to lowercase
+
+REPLACE(col_name, oldval, newval) : replace column value
+-----------------
+Questions:
+1:  Find Different type of departments in database?
+
+2: Display records with High-low salary
+
+3: How to see only top 3 records from a table?
+
+4: Show records where first name start with letter 'A'
+
+5: Show records where length of the lname is 4 characters
+
+6:  Find Total no. of employees in database?
+
+7: Find no. of employees in each department.
+
+8: Find lowest salary paying
+
+9: Find highest salary paying
+
+10: Find total salary paying in Loan department?
+
+11: Average salary paying in each department
+
+--------------------------------------------------------------------
+Altering table:
+
+Alter table table_name Add column age int default 10 // add column
+Alter table table_name Drop column age  // add column
+Alter table table_name  Rename column age to agees // rename column name
+Alter table table_name Rename to employee // change table name
+Alter table table_name Alter column col_name SET  data type/Constraints varchar(200) // chnage the data type of column
+
+--------------------
+Case:
+When Then Else // to add if else conditions
+
+select fname, salary,   
+case 
+	when salary >= 60000 then 'High'
+	else 'Low' 
+	end as sal_cat from employees;
+
+Questions:
+add bonus of 10% to the employee whose salary is greater than 60000 and 0 to others
+find count of mid high and low salary employe low < 50000 , mid 50k to 60k, high above 60k
+
+-----------------------------------------------------------------------
+Relations :
+foreign key: a primary key of another table used in a table to make relation
+create table orders (id serial primary key, cust_id Integer not null, Foreign key(cust_id) references customer(id)  );
+
+One to One: an entity has one relation on another table
+
+One to Many: an entity has many relation on another table
+
+Many to Many : student can have multiple course and course has multiple students
+                to miantain many to many we use 3rd table that holds relation of other 2
+--------------
+
+when ever we miantain relationship morethan one table then we read data with JOINS
+
+Types of Join:
+
+Cross Join: Every row from one table is combined with every row from another table.
+            select * from customer CROSS JOIN orders
+
+Inner Join: Returns only the rows where there is a match between the specified columns in both the table 
+            select * from customer INNER JOIN orders ON customer.id == orders.cust_id;  
+            select c.cust_name, count(o.ord_id) as order_count from customer c INNER JOIN orders o ON c.id = o.cust_id GROUP BY cust_name;
+Inner join with many to many relation : 
+SELECT
+    e.enrollment_id,
+    s.name AS student_name,
+    c.name AS course_name,
+    c.fee,
+    e.enrollment_date
+FROM
+    enrollment e
+JOIN
+    students s ON e.s_id = s.s_id
+JOIN
+    courses c ON e.c_id = c.c_id;
+
+
+
+Left Join: Returns all rows from the left table and the matching rows from the right table
+
+Right Join: Returns all rows from the right table and the matching rows from the left table
+
+Question:
+display the relationship between customers and their orders, along with the details of the products in each order?
+
+--------------------------------------------------------------------------------------------
+Views:
+temporary table that stores snapshot of most frequently used data.
+CREATE VIEW billing_info as (whole query)
+select * from billing_info
+
+-----------------------------------------------------------------------------------------
+Stored Procedure:
+Set of SQL Statement that can be stored on database server which can be call no. of times.
+
+Types of STORED Routine:
+->STORED Procedure:
+
+    CREATE OR REPLACE PROCEDURE add_employee(
+    p_fname varchar,
+    p_lname varchar,
+    p_email varchar,
+    p_dep varchar,
+    p_salary numeric
+    )
+    LANGUAGE plpgsql
+    AS $$
+    BEGIN
+    insert into employees (fname,lname,email, dep, salary) values(p_fname,p_lname,p_email,p_dep,p_salary);
+    END;
+    $$;
+------------
+    CALL add_employee(
+    'John', 
+    'Doe', 
+    'john.doe@example.com', 
+    'IT', 
+    60000
+    );
+
+-------------------------------------
+-> subquery : query inside another query
+        SELECT id,  fname, salary FROM employees WHERE  dep = 'HR' AND salary = ( SELECT MAX(salary) FROM employees  WHERE dep = dept_name);
+
+----------------
+-> User defined Functions : custom function created by the user to perform specific operations and return a value.
+
+    CREATE OR REPLACE FUNCTION dept_max_sal_emp1(dept_name VARCHAR)
+    RETURNS TABLE(emp_id INT, fname VARCHAR, salary NUMERIC) 
+    AS $$
+    BEGIN
+        RETURN QUERY
+        SELECT 
+        e.id,  e.fname, e.salary
+        FROM 
+            employees e
+        WHERE 
+            e.dep = dept_name
+            AND e.salary = (
+                SELECT MAX(emp.salary)
+                FROM employees emp
+                WHERE emp.dep = dept_name
+            );
+    END;
+    $$ LANGUAGE plpgsql;
+----------------
+    select * from dept_max_sal_emp1('HR')
+
+--------------------------------------
+CTE(Common Table Expression) : is a temporary result set that you can define within a query to simplify complex SQL statements.
+
+with max_salary as(
+	select dep, max(salary) as max_salary from employees Group By dep
+)
+
+select e.fname, e.dep , e.salary from employees e Join max_salary ms on e.dep = ms.dep where e.salary = ms.max_salary;
+
+---------------------------------------------
+TRIGGERS: these are special procedures in a database that automatically execute predefined actions in response to certain events 
+          on a specified table or view.
+//createing triggeing function 
+CREATE OR REPLACE FUNCTION check_salary()
+    RETURNS TRIGGER
+    AS $$
+    BEGIN
+		If NEW.salary < 0 then
+		   NEW.salary = 0;
+		END IF;
+		return NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+
+//creating trigger
+CREATE TRIGGER before_insert
+BEFORE INSERT on employees
+FOR EACH ROW
+EXECUTE FUNCTION check_salary();
+
+
+
+
