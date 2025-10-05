@@ -21,6 +21,8 @@ Documnets -> data in the form of json
 
 Each document has size liimit of 16mb and documents can be nested upto 100 levels
 -------------------------
+use dbname: //create new db
+db.students.insertOne(data, option) //create collection and add document in it
 
 Crud opreation 
 1)create -> insertOne(data, option) , insertMany(data, option)
@@ -66,7 +68,7 @@ Crud opreation
                    find({$and:[{age:{$lt:10}},{hobbies:'walk'}]}) and
                    find({age:{$not:{$gt:5}}}) not
 
-                3)exist and type operator 
+                3)exist and type operator // for filed existense and its type
                     find({hasmac:{$exists:true, $type:8}})   
                 
                 4)evaluation operator
@@ -94,9 +96,6 @@ Crud opreation
           h)db.students.updateOne({name:"sita"} , {$mul:{age:2}}) multiply age by 2
           i)db.students.updateOne({name:"sita"} , {$unset:{age:2}}) will remove the field
           j)db.students.updateOne({name:"sita"} , {$rename:{age: "newAge"}}) will rename the field
-
-
-
  
 4)delete -> deleteOne(filter, options) , deleteMany(filter, options)
        Queries : 
@@ -219,8 +218,8 @@ types of indexing:-
    db.collection.createIndex({experience:1}) // but this storage consuming as index will be created for each array value which are unique
 
 4)text indexes
-text index per collection is only one, tokenization and stampigg(convert string into array and convert word into singular), performance score
-we can add multiple fields to single text index
+    text index per collection is only one, tokenization and stampigg(convert string into array and convert word into singular), performance score
+    we can add multiple fields to single text index
 
   db.collection.createIndex({bio:"text", description:"text"})
   db.collection.find({$text:{$search:"youtube"}})
@@ -244,7 +243,7 @@ In case of multiple indexes Mdb comapre indexes by running few documents and sto
 so next time similar type query gets called it will used faster index for search
 
 ->collection gets blocked if index starts getting created 
-    db.collection.createIndex({bio:"text", description:"text"}, {background: true}) // this unblock the collection only query related to indexing will be blocked
+    this unblock the collection only query related to indexing will be blocked
 
 
 -------------------------------------------------------------------------
@@ -258,7 +257,10 @@ db.collection.aggregate([ {$group: { _id:"$age", }  } ]) return group document b
 db.collection.aggregate([ {$group: { _id:"$age", names: { $push:"$name" } }  } ]) return group document by age containing _id and names arry
 db.collection.aggregate([ {$group: { _id:"$age", pooraDocs: { $push:"$$ROOT" } }  } ]) return group document by age containing _id and pooraDocumnt arry containig full details
 db.collection.aggregate([ {$match:{ gender: "male" }}, { $group : { _id:"$age", count: {$sum: 1} } }])  return the count of documents who are male and are of same age 
-db.collection.aggregate([{ $match: { gender: "male" } }, { $group : { _id:"$age" , count: { $sum  : 1 } } } , { $sort: {count: -1} }]) return count of male teacher of same group in sorted order
+db.collection.aggregate([{ $match: { gender: "male" } }, { $group : { _id:"$age" , count: { $sum  : 1 } } } , { $sort: {count: -1} }]) return count of male teacher of same age group in descenidng order
+--------------------------
+Aggregation On Arrays:
+
 db.collection.aggregate([{ $group: {_id:"$age" , hobbies: {$push:"Hobbies"}} }]) return hobbies of students based on the age but this gives nested array
 db.collection.aggregate([ {$unwind: "Hobbies"} ,{ $group: {_id:"$age" , hobbies: {$push:"Hobbies"}} }]) return hobbies of students based on the age in single array
 $unwind -> will create copies of same document based on its hobbies, ["walk", "read"] -> {_id: "abc", hobbies:"walk"}, {_id: "abc", hobbies:"read"}
@@ -435,7 +437,7 @@ Sharding -  is a method for distributing data across multiple machines
 1)vertical scalling - eg: trying to increase the same machine storage, but at some point of time it has a liimit
 2)horizontal scaling - distributing data across multiple machines 
 -----------------------------------------------------------------------
-Transactions - set of operations that are performed as a single, means if one failes rest will rollback, transactions are desihned to provide ACID properties
+Transactions - set of operations that are performed as one operation, transactions are designed to provide ACID properties
 ACID
 Atomicity - Transaction is treated as single entity, all the operations in it either gets completed or none of them will be completed
 Consistency - before and after transaction state should be valid, constraints(a unique field no duplicacy)  should be remained there before and after, referncing(doc referencing to a doc in another collection) also need to be there before and after
@@ -523,7 +525,7 @@ const schema = new Schema({
     password: {
         type: String,
         requried: true
-         select: false ->  so that get api will not show/select this attribute
+        select: false ->  so that get api will not show/select this attribute
     }
 },
 {

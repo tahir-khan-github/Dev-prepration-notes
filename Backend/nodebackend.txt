@@ -29,7 +29,8 @@
     Node js is a runtime environment that allows JavaScript to be used for server-side development
 
 9)what is singlethreaded programming
-    Single-threaded programming refers to the execution of code in a single sequence of operations, using only one thread of execution
+    it executes tasks one at a time in a sequential manner, using one call stack and one memory heap
+    Code is executed one instruction after another, in the exact order it's written. 
 
 9.1)if node js single threaded then how nodejs handles multiple task at once
     it takes all the request in the event queue and an event loop is watching over it, the event loop takes out request in FIFO and checks
@@ -39,15 +40,22 @@
 
 9.2)runtime environment vs framework
     A runtime environment provides the infrastructure and services required to execute code written in a particular programming language
-    A framework is a pre-built set of tools, libraries designed to for the development of specific types of applications
+    A framework is a pre-built set of tools, libraries designed for the development of specific types of applications
 
 9.3)node vs express
     Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine.
-    Express is a  framework for Node.js that provides a robust set of features to develop  applications.
+    Express is a  framework for Node.js that provides a set of features to develop  applications.
 
 9.4)advantages and disadvantages of nodejs
-    advantages: Node.js uses an event-driven, non-blocking I/O model, which allows it to handle multiple requests concurrently 
-    disadvantages: Lack of Built-in Support for Multi-threading, Callback Hell:Asynchronous programming in Node.js often leads to deeply nested callbacks, 
+    advantages: 
+    Node.js uses an event-driven, non-blocking I/O model, which allows it to handle multiple requests concurrently 
+    JavaScript can be used both at FE & BE 
+    ITs cross-platform support works on windows,mac
+    Large ecosystem becoz of npm
+    
+    disadvantages: 
+    Lack of Built-in Support for Multi-threading,
+    Callback Hell:Asynchronous programming in Node.js often leads to deeply nested callbacks, 
 
 9.6)synchronus vs asynchronous
     Synchronous operations are those that are executed sequentially.
@@ -58,7 +66,7 @@
     a directory that stores all the installed packages and their dependencies for a project
 
 11)what are modules in nodejs and types of module  and ways of importing and exporting it
-    modules are individual pieces of code that encapsulate functionality and can be reused across different parts of an application.
+    modules are individual pieces of code that can be reused across different parts of an application.
     types:
     1)core module: os, fs
     2)local module: which we develop
@@ -96,9 +104,9 @@
 12.1)what is path module
     path.basename(filePath); //last portion of a path (the file name).
     path.dirname(filePath); //directory name of a path '/users/admin/documents'
-    path.extname(filePath);
+    path.extname(filePath); // gives file extenstion
     path.join('/users', 'admin', 'documents', 'file.txt');
-    path.resolve('users', 'admin', 'documents', 'file.txt');// absolute path from root
+    path.resolve('users', 'admin', 'documents', 'file.txt');// absolute path from root '/' is given it will start from here
 
 12.2)what is os module
         os.platform()
@@ -116,70 +124,46 @@
         server.listen(PORT, () => {
         console.log(`Server running at http://localhost:${PORT}/`);
         });
-        ---send request to other server---------------
+    ----------CRUD--------------------
+    const server = http.createServer((req,res)=>{
+        res.setHeaders('Content-type','Application/Json');
 
-        const options = {
-        hostname: 'example.com',
-        port: 80,
-        path: '/',
-        method: 'GET'
-        };
+        if(req.method === 'GET' && req.url === '/items'){
+            res.end(JSON.stringyfy(items));
+        }else if(req.method === 'POST' && req.url === '/items'){
+            let body = '';
+            req.on("data", (chunk) => data += chunk);
+            req.on("end", ()=>{
+                const item = {id: 1, name: "abcd"};
+                items.push(item);
+                res.end(JSON.stringfy(item))
+            })
+        }else if(req.method === 'PUT'  && req.url.startsWith(/items/)){
+            const id = req.url.split("/")[2]
+            let body = '';
+            req.on("data", (chunk) => data += chunk);
+            req.on("end", ()=>{
+               const index = items.filter((i) => i.id === id);
+               if(index != -1){
+                items[index] = {id, ...JSON.parse(body)};
+               }
+                res.end(JSON.stringfy(items[index] || {error: "Not found"}))
+            })
 
-        const req = http.request(options, (res) => {
-            res.setEncoding('utf8');
-            res.on('data', (chunk) => {
-                console.log(`BODY: ${chunk}`);
-            });
-            res.on('end', () => {
-                console.log('No more data in response.');
-            });
-        });
+        }else if(req.method === 'DELETE' && req.url.startsWith(/items/)){
+             const id = req.url.split("/")[2];
+             const items = items.filter((e) => e.id != id);
+             res.end(JSON.stringfy( {message: "Item deleted successfully!"}))
+        }else{
+             res.end(JSON.stringfy( {error: "Invalid route"}))
+        }
+    })
 
-        req.on('error', (e) => {
-        console.error(`Problem with request: ${e.message}`);
-        });
-
-        req.end();
-        ---------post-----------
-        const server = http.createServer((req, res) => {
-            if (req.method === 'POST') {
-                let body = '';
-
-                req.on('data', (chunk) => {
-                body += chunk.toString();
-                });
-
-                req.on('end', () => {
-                console.log(`Received data: ${body}`);
-                res.end('Data received');
-                });
-            } else {
-                res.end('Send a POST request to send data');
-            }
-});
-----------------------get----------------
-
-            const profile = {
-            name: 'John Doe',
-            age: 30,
-            occupation: 'Software Developer',
-            location: 'San Francisco, CA',
-            };
-
-            const server = http.createServer((req, res) => {
-            if (req.method === 'GET' && req.url === '/getmyprofile') {
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify(profile));
-            } else {
-                res.writeHead(404, { 'Content-Type': 'text/plain' });
-                res.end('Not Found');
-            }
-            });
-
+    server.listen(3000, () => console.log("Server on http://localhost:3000"));
 
 15)what is ip adress and how to obtain ip adress of user in nodejs
     An IP address (Internet Protocol address) is a unique identifier assigned to each device connected to a network
-     cconst ipAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+     const ipAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
 
 ---------------------Rest Api------------------
@@ -203,17 +187,16 @@
         it contains scheme(https), domain name, path, query, 
 
 4)what are idempotent methods?
-    no matter how many times you apply an idempotent method, the outcome remains the same after the first application.
+    An idempotent method is one that, no matter how many times you call it with the same input, the result is the same.
     like get, put, delete they will show have no effect after first application
     but POST is non-idempotent as every time it will change the state
 
 5)what is SOAP ?
-    SOAP (Simple Object Access Protocol) one of a Protocol, its much strict than REST and It's  based on XML.
+    SOAP (Simple Object Access Protocol) one of a Protocol like REST,but  its much stricter than REST and It's  based on XML.
 
 -------------------Express-------------------
 1)what is middleware?
-    In Node.js, middleware refers to functions that have access to the request (req), response (res),
-    and the next middleware function in the application's request-response cycle.
+    Middleware is a function that sits in the middle of the request-response cycle.
     example - authentication middleware, which check for the request before it reaches to route handler 
 
     app.use(express.json()); //to access  json data in request
@@ -247,13 +230,6 @@
     return res.status(err.statusCode).json(response)
 };
 
-const TryCatch = (passedFun)=> async (req, res, next)=>{
-    try {
-        await passedFun(req, res, next);
-    } catch (error) {
-         next(error)
-    }
-}
 
 3)how authentication is done?
     authentication is done using jsonwebtoken and cookies ,at the time of registering user we create a token using jwt.sign and sends it to client in the cookie
