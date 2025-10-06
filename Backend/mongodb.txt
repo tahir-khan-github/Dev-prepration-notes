@@ -19,7 +19,10 @@ Documnets -> data in the form of json
                     But in mongodb all data related a collection is put together and hence query becomes fast & easy 
 3)BSON :- for user data is stored in JSON format but in MDB it stored in BSON(binary representation of json) so that its traversal gets fast
 
-Each document has size liimit of 16mb and documents can be nested upto 100 levels
+Advantages:
+1)flexible schema design
+2)highly scalable due to Sharding
+3)highly available due to Replication
 -------------------------
 use dbname: //create new db
 db.students.insertOne(data, option) //create collection and add document in it
@@ -243,6 +246,7 @@ In case of multiple indexes Mdb comapre indexes by running few documents and sto
 so next time similar type query gets called it will used faster index for search
 
 ->collection gets blocked if index starts getting created 
+    db.collection.createIndex(..., { background: true })
     this unblock the collection only query related to indexing will be blocked
 
 
@@ -250,6 +254,10 @@ so next time similar type query gets called it will used faster index for search
 Aggregation :-
 concept in which mulitple queries will work in sequence(one after another) 1st result -> 2nd query , 2nd result -> 3rd query
 db.collection.aggregate(pipeline) pipeline - array of different operations
+1)$match
+2)$group
+3)$project
+4)$lookup
 
 
 db.collection.aggregate([ {$match:{ gender: "male" }} ]) return document with gender as male
@@ -290,136 +298,6 @@ db.collection.aggregate([{$project:{_id:0, name:1, dept:"$department", annualSal
                         {$unionWith:{ coll:"order", pipeline:[ {$lookup: {from:"cust", localField:"cust_id", foreignField: "_id", as: "Customer" } }, {$match:{$Customer:{$eq:[]}}} ] }} //union with right outer join with avoiding same field
      ])
 
-cust = [ 
-  {
-    _id:1,
-    name:"abc",
-  } ,
-    {
-    _id:2,
-    name:"def",
-  } ,
-  {
-    _id:3,
-    name:"ghi",
-  } ,
-  ]
-
-order =  [ 
-  {
-    _id:11,
-    products:"abc",
-    cust_id: 1
-  } ,
-    {
-    _id:22,
-    products:"def",
-    cust_id: 2
-  } ,
-  {
-    _id:33,
-    products:"ghi",
-    cust_id: 5
-  } ,
-  ]
-result :
- left outer join - [ 
-  {
-    _id:1,
-    name:"abc",
-    orderDetails:[
-          {   
-          _id:11,
-            products:"abc",
-            cust_id: 1
-         }
-      ]
-  } ,
-    {
-    _id:2,
-    name:"def",
-    orderDetails:[
-          {
-            _id:22,
-            products:"def",
-            cust_id: 2
-          }
-      ]
-  } ,
-  {
-    _id:3,
-    name:"ghi",
-    orderDetails:[]
-  } ,
-  ]
-
- right outer join with match- [ 
- /*** {
-    _id:11,
-    products:"abc",
-    cust_id: 1,
-    Customers: [
-      {
-        _id:1,
-        name:"abc",
-      }
-    ]
-  } ,
-    {
-    _id:22,
-    products:"def",
-    cust_id: 2,
-    Customers: [
-      {
-        _id:2,
-        name:"def",
-      }
-    ]
-  } , ***/
-  {
-    _id:33,
-    products:"ghi",
-    cust_id: 5,
-    Customers: [ ]
-  } ,
-  ]
-
-  union value - 
-  [ 
-  {
-    _id:1,
-    name:"abc",
-    orderDetails:[
-          {   
-          _id:11,
-            products:"abc",
-            cust_id: 1
-         }
-      ]
-  } ,
-    {
-    _id:2,
-    name:"def",
-    orderDetails:[
-          {
-            _id:22,
-            products:"def",
-            cust_id: 2
-          }
-      ]
-  } ,
-  {
-    _id:3,
-    name:"ghi",
-    orderDetails:[]
-  },
-  {
-    _id:33,
-    products:"ghi",
-    cust_id: 5,
-    Customers: [ ]
-  } 
-  ]
 
 ------------------------------------------------------------------------
 Capped collection :- collection in which older data gets removed automatically when ever max or size reached
@@ -429,6 +307,7 @@ db.collection.createCollection("coll_name", { capped: true, max:4, size:10000 })
 Replication and sharing
 Replication - duplicating the data of 1 server onto another, duplicating operation is asyncrones becoz we want to prioritize Crud
               ,fault tolerence increased, performance increase as if one server is busy , remaning operation can be performed on another duplicate server
+              master-configuration is used
 Sharding -  is a method for distributing data across multiple machines
 
 
@@ -555,27 +434,18 @@ members is of type [ObjectId] and containing reference for User schema, so on fi
 
 //->create
 //)insert one document
-//)insert one document with options
 //)insert many document 
 //)insert many document in case of same id
 --------------------------------------------
 //->read
 //)find one document with name ram
 //)return list of documents having age b/w 30 and 40 
-//)return list of documents having including 30 and 40 
-//)return list of documents having not including 30 and 40 
+//)return list of documents having including 30 and 40  
 //)Find documents where the age is either less than or equal to 30 or greater than or equal to 40.
-//)Find documents where the age is neither less than or equal to 10 nor greater than or equal to 12.
 //)Find documents where the age is greater than 30 and the hobbies include "walking"
-//)Find documents where the age is not greater than 5.
-//)return weher value of age field is greater than average value of age field
-//)return devided values
 -----------------------------------------------
 ->update
-//)increment the age by 2    
-//)decrement the age by 2    
-//)increase age of John Doe, only if age is lesser than 50
-//)multiply age by 2 of John Doe
+//)update the hobbies of any one document 
 //)remove age field from John Doe
 //)rename the age field of John Doe
 -----------------------------------------------
@@ -586,123 +456,44 @@ members is of type [ObjectId] and containing reference for User schema, so on fi
 ----------------------------------------
 ->code for schema validation and modification of schema validation
 ------------------------------------------------
-types of indexing
+Atomicity in mongodb?
+------------------------------------------------
+what is indexing and types of indexing
 //)command for getIndex and createIndex for all types
 //)search youtube in the documents where age is greater than 12 and also expires index after sometime 
 //)collection gets blocked if index starts getting created make it unblock
 ------------------------------------------------
-->modal creation
+->Data Modeling:
+1)Embeded Docs: related docs put together eg: customer collection has an order field to store order details
+2)Reference Docs: 2 seperate collections have reference of each other eg: order collection has a customer id 
 ------------------------------------------------
 
 //1)Students who have experience in amazon ?
-//2)how many students who worked in spotify ?
-//3)how many students who have worked in 3 companies ?
-//4)how many students who have worked in more than 3 companies ?
-//5)how many students whose hobbies are walking and read  ?
-//6)how many students who are working in amazon and has salary greater than 1001 ?
-//7)sort students working in amazon based on salary and if salary same then sort on name
-//8)for all having  duration than 2 add new field neglect:true to first matched element
-//8.1)add new field neglect:true to all element of experience array
-//8.2)for all having duration lesser than 2 add new field neglect:true 
-//8.3)add new document in the experience array of Ram
-//8.4)add new document in the experience array of Ram but avoid redundancy
-//8.5)remove a document in the experience array of Ram
-//8.6)remove a document in the experience array of Ram from top and bottom
+//2)find students whose hobbies are walk and play  ? $all -  to check the all values in array
+//3)how many students who are working in amazon and has salary greater than 1001 ? // $elemMatch - to check object in an array
 
-//9)return document with gender as male using aggregate
-//10)return group document by age containing _id and names arry
-//11)return group document by age containing _id and pooraDocumnt arry containig full details
-//12) return the count of male age wise
-//13)return count of male teacher of same age group in sorted order
-//14)return hobbies of students based on the age 
-//15)return hobbies of students based on the age in single array
-//16)return number of students based on the hobbies
-//17)return total number of hobbies of all student
-//18)left outer join  
-//19)right outer join
-//20)inner join
-//21)full outer join
-//22)transaction query
-/23)capped query
+$.filed - single object, $[].field - all objects in array, $[e].filed selected objects
+//4)for all having  duration than 2 add new field neglect:true to first matched element
+//4.1)add new field neglect:false to all element of experience array
+//4.2)for all having duration lesser than 2 add new field accept:true 
 
+//5)add new document in the experience array of Ram  
+//6)add new document in the experience array of Ram but avoid redundancy
+//7)remove a document in the experience array of Ram
+//8)remove a document in the experience array of Ram from top and bottom
 
+Aggregation pipeline
+//9)return group document by age containing _id and names arry
+//10)return count of male teacher of same age group in sorted order
 
+//11)return hobbies of students based on the age 
+//12)return hobbies of students based on the age in single array
+//13)return number of students based on the hobbies
+//14)return total number of hobbies of all student
 
-//1 to 19
-  [
-    { "_id": 1, "name": "John Doe", "age": 35, "gender": "male" ,    
-     hobbies:["walk","cricket"],
-      experience:[
-        {company:"amazon", duration:1, salary: 1003},
-        {company:"spotify", duration:3, salary: 1004},
-        {company:"paytm", duration:1, salary: 1001},
-      ]
-    },
-    { "_id": 2, "name": "Jane Smith", "age": 40, "gender": "female",
-        hobbies:["walk","cricket"],
-      experience:[
-        {company:"amazon", duration:1, salary: 1003},
-        {company:"spotify", duration:3, salary: 1004},
-        {company:"paytm", duration:1, salary: 1001},
-      ]
-     },
-    { "_id": 3, "name": "Michael Johnson", "age": 45, "gender": "male",
-       hobbies:["walk","cricket"],
-      experience:[
-        {company:"amazon", duration:1, salary: 1003},
-        {company:"spotify", duration:3, salary: 1004},
-        {company:"paytm", duration:1, salary: 1001},
-      ]
-     },
-    { "_id": 4, "name": "Emily Williams", "age": 30, "gender": "female",
-      hobbies:["walk","cricket"],
-      experience:[
-        {company:"amazon", duration:1, salary: 1003},
-        {company:"spotify", duration:3, salary: 1004},
-        {company:"paytm", duration:1, salary: 1001},
-      ] 
-      },
-    { "_id": 5, "name": "Robert Brown", "age": 38, "gender": "male",
-            hobbies:["walk","cricket"],
-      experience:[
-        {company:"amazon", duration:1, salary: 1003},
-        {company:"spotify", duration:3, salary: 1004},
-        {company:"paytm", duration:1, salary: 1001},
-      ]
-     },
-  ]
-
-
-//20 to 23
-cust = [ 
-  {
-    _id:1,
-    name:"abc",
-  } ,
-    {
-    _id:2,
-    name:"def",
-  } ,
-  {
-    _id:3,
-    name:"ghi",
-  } ,
-  ]
-
-order =  [ 
-  {
-    _id:11,
-    products:"abc",
-    cust_id: 1
-  } ,
-    {
-    _id:22,
-    products:"def",
-    cust_id: 2
-  } ,
-  {
-    _id:33,
-    products:"ghi",
-    cust_id: 5
-  } ,
-]
+//15)left outer join with showing only status from Joined document field
+//17)inner join
+//18)full outer join
+//19)transaction query
+//20)capped query
+------------------------------------------------------
