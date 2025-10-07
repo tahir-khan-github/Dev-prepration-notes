@@ -21,7 +21,7 @@ cmd cli:
 ------------------------------------------------------------------
 Tabels:
 
-CREATE TABLE person (id INT, name VARCHAR(100), city VARCHAR(50)) // create table with provided columns
+CREATE TABLE person (id INT, name VARCHAR(100), city VARCHAR(50)) // create table with provided columns and data types
 INSERT INTO students (id, name) VALUES (101, "Rahul") // inset data into table  // one row data
 INSERT INTO customer (cust_name) VALUES ('Raju'), ('Sham'), ('Paul'), ('Alex'); //multiple row of same column insertion
 SELECT * FROM <table_name> // read all data from table
@@ -68,8 +68,10 @@ max(col_name) //max total record
 min(col_name) //min total record
 sum(col_name) //sum total record
 
-find total number of employee?
+
 find employee with max salary?
+select MAX(salary) as MaxSalary from employees;
+
 find average salary of employee?
 
 -----------------
@@ -84,40 +86,17 @@ Upper(col_name) : convert to uppercase
 lower(col_name) : convert to lowercase
 
 REPLACE(col_name, oldval, newval) : replace column value
------------------
-Questions:
-1:  Find Different type of departments in database?
-
-2: Display records with High-low salary
-
-3: How to see only top 3 records from a table?
-
-4: Show records where first name start with letter 'A'
-
-5: Show records where length of the lname is 4 characters
-
-6:  Find Total no. of employees in database?
-
-7: Find no. of employees in each department.
-
-8: Find lowest salary paying
-
-9: Find highest salary paying
-
-10: Find total salary paying in Loan department?
-
-11: Average salary paying in each department
 
 --------------------------------------------------------------------
 Altering table:
 
 Alter table table_name Add column age int default 10 // add column
-Alter table table_name Drop column age  // add column
+Alter table table_name Drop column age  // drop column
 Alter table table_name  Rename column age to agees // rename column name
 Alter table table_name Rename to employee // change table name
-Alter table table_name Alter column col_name SET  data type/Constraints varchar(200) // chnage the data type of column
+Alter table table_name Alter column col_name SET  data type/Constraints varchar(200) // chanage the data type of column
 
---------------------
+-----------------------------------------------------------------
 Case:
 When Then Else // to add if else conditions
 
@@ -126,10 +105,6 @@ case
 	when salary >= 60000 then 'High'
 	else 'Low' 
 	end as sal_cat from employees;
-
-Questions:
-add bonus of 10% to the employee whose salary is greater than 60000 and 0 to others
-find count of mid high and low salary employe low < 50000 , mid 50k to 60k, high above 60k
 
 -----------------------------------------------------------------------
 Relations :
@@ -154,28 +129,11 @@ Cross Join: Every row from one table is combined with every row from another tab
 Inner Join: Returns only the rows where there is a match between the specified columns in both the table 
             select * from customer INNER JOIN orders ON customer.id == orders.cust_id;  
             select c.cust_name, count(o.ord_id) as order_count from customer c INNER JOIN orders o ON c.id = o.cust_id GROUP BY cust_name;
-Inner join with many to many relation : 
-SELECT
-    e.enrollment_id,
-    s.name AS student_name,
-    c.name AS course_name,
-    c.fee,
-    e.enrollment_date
-FROM
-    enrollment e
-JOIN
-    students s ON e.s_id = s.s_id
-JOIN
-    courses c ON e.c_id = c.c_id;
-
-
 
 Left Join: Returns all rows from the left table and the matching rows from the right table
 
 Right Join: Returns all rows from the right table and the matching rows from the left table
 
-Question:
-display the relationship between customers and their orders, along with the details of the products in each order?
 
 --------------------------------------------------------------------------------------------
 Views:
@@ -269,6 +227,77 @@ CREATE TRIGGER before_insert
 BEFORE INSERT on employees
 FOR EACH ROW
 EXECUTE FUNCTION check_salary();
+
+-----------------
+Questions:
+1:  Find Different type of departments in database?
+
+2: Display records with High-low salary?
+
+3: How to see only top 3 records from a table?
+
+4: Show records where first name start with letter 'A'?
+
+5: Show records where length of the lname is 4 characters?
+
+6:  Find Total no. of employees in database?
+
+7: Find no. of employees in each department?
+
+8: Find lowest salary paying
+
+9: Find highest salary paying
+
+10: Find total salary paying in HR department?
+
+11: Average salary paying in each department?
+
+12: Add a new coloumn?
+
+13: Remove a column?
+
+14: Rename a column?
+
+15: change Datatype of a column?
+
+16: show a salary category if salary > 50000 then high else low
+
+17: find count of mid, high and low salary employe low < 50000 , mid 50k to 60k, high above 60k
+
+18: return id, name, salary of employee in HR department who has max salary?
+
+19: find the order count of each customer?
+
+20: display the relationship between customers and their orders, along with the details of the products in each order?
+ SELECT
+    e.enrollment_id,
+    s.name AS student_name,
+    c.name AS course_name,
+    c.fee,
+    e.enrollment_date
+FROM
+    enrollment e
+JOIN
+    students s ON e.s_id = s.s_id
+JOIN
+    courses c ON e.c_id = c.c_id;
+
+21: what is view?
+
+21: what is stored Procedure?
+
+22: What is User defined fucntion and Triggers?
+
+23:How Do You Optimize Queries In PostgreSQL?
+
+24:  Replication in PostgreSQL?
+
+25: MVCC (Multi-Version Concurrency Control) in PostgreSQL?
+
+
+26: How to Handle Backup and Restore in PostgreSQL?
+
+27: What are indexing and its types in PSQL?
 
 
 
