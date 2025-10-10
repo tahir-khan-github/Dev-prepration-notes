@@ -482,7 +482,7 @@ $.filed - single object, $[].field - all objects in array, $[e].filed selected o
 //7)remove a document in the experience array of Ram
 //8)remove a document in the experience array of Ram from top and bottom
 
-Aggregation pipeline
+Aggregation pipeline($group, $match, $lookup, $project)
 //9)return group document by age containing _id and names arry
 //10)return count of male teacher of same age group in sorted order
 
