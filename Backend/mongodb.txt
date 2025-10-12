@@ -439,9 +439,7 @@ members is of type [ObjectId] and containing reference for User schema, so on fi
 --------------------------------------------
 //->read
 //)find one document with name ram
-//)return list of documents having age b/w 30 and 40 
-//)return list of documents having including 30 and 40  
-//)Find documents where the age is either less than or equal to 30 or greater than or equal to 40.
+//)return list of students having including age 30 and 40  
 //)Find documents where the age is greater than 30 and the hobbies include "walking"
 -----------------------------------------------
 ->update
@@ -487,13 +485,14 @@ Aggregation pipeline($group, $match, $lookup, $project)
 //10)return count of male teacher of same age group in sorted order
 
 //11)return hobbies of students based on the age 
-//12)return hobbies of students based on the age in single array
-//13)return number of students based on the hobbies
-//14)return total number of hobbies of all student
+//12)return hobbies of students based on the age in single array without duplicates
 
-//15)left outer join with showing only status from Joined document field
-//17)inner join
-//18)full outer join
-//19)transaction query
-//20)capped query
+//13)left outer join with showing only status from Joined document field
+//14)inner join
+//15)full outer join
+//16)transaction query
+//17)capped query
+//18)Replication
+//19)Sharding
+//20)Which DB to use when
 ------------------------------------------------------
