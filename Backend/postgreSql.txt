@@ -232,7 +232,7 @@ EXECUTE FUNCTION check_salary();
 Questions:
 1:  Find Different type of departments in database?
 
-2: Display records with High-low salary?
+2: Display records with High to low salary?
 
 3: How to see only top 3 records from a table?
 
@@ -283,21 +283,59 @@ JOIN
     courses c ON e.c_id = c.c_id;
 
 21: what is view?
+    A view is a virtual table in a database.
 
 21: what is stored Procedure?
+    Its a block of SQL queries stored in database
 
-22: What is User defined fucntion and Triggers?
+22: What is User defined fucntion ?
+    functions  written by the user to perform a specific task in the database.
+
+22.1: what is Triggers?
+    Trigger is a special kind of stored procedure that is automatically executed in response to certain events
 
 23:How Do You Optimize Queries In PostgreSQL?
+    indexing
+    dont use select *
+    proper JOINS
+    use limits to limit number of data
 
 24:  Replication in PostgreSQL?
+    Master slave configuration
 
 25: MVCC (Multi-Version Concurrency Control) in PostgreSQL?
-
+    is a method PostgreSQL uses to allow multiple transactions to access the database concurrently without locking the entire table.
 
 26: How to Handle Backup and Restore in PostgreSQL?
+    for backup pg_dump utility and for restore psql utility
+    pg_dump mydatabase > mydatabase_backup.sql
+    psql mydatabase < mydatabase_backup.sql
 
 27: What are indexing and its types in PSQL?
+
+28: How partitioning is done?
+    CREATE TABLE sales (
+        sale_id SERIAL,
+        sale_date DATE,
+        amount NUMERIC
+    ) PARTITION BY RANGE (sale_date);
+
+    CREATE TABLE sales_2021 PARTITION OF sales
+    FOR VALUES FROM ('2021-01-01') TO ('2022-01-01');
+
+29: What is WAL?
+    Write-Ahead Logging (WAL) in PostgreSQL is a method used to ensure data integrity. 
+    Before any changes are made to the database, the changes are first recorded in a log (WAL).
+    This log helps in recovering the database to a consistent state in case of a crash.
+
+30: How to add foreign key?
+
+    CREATE TABLE employees (
+    employee_id SERIAL PRIMARY KEY,
+    name VARCHAR(100),
+    department_id INT,
+    FOREIGN KEY (department_id) REFERENCES departments(department_id)
+);
 
 
 
