@@ -260,15 +260,13 @@ Questions:
 
 15: change Datatype of a column?
 
-16: show a salary category if salary > 50000 then high else low
+16: find count of mid, high and low salary employe low < 50000 , mid 50k to 60k, high above 60k
 
-17: find count of mid, high and low salary employe low < 50000 , mid 50k to 60k, high above 60k
+17: return id, name, salary of employee in HR department who has max salary?
 
-18: return id, name, salary of employee in HR department who has max salary?
+18: find the order count of each customer?
 
-19: find the order count of each customer?
-
-20: display the relationship between customers and their orders, along with the details of the products in each order?
+19: display the relationship between customers and their orders, along with the details of the products in each order?
  SELECT
     e.enrollment_id,
     s.name AS student_name,
@@ -282,7 +280,7 @@ JOIN
 JOIN
     courses c ON e.c_id = c.c_id;
 
-21: what is view?
+20: what is view?
     A view is a virtual table in a database.
 
 21: what is stored Procedure?
@@ -312,6 +310,14 @@ JOIN
     psql mydatabase < mydatabase_backup.sql
 
 27: What are indexing and its types in PSQL?
+    CREATE INDEX index_name ON table_name (column_name);
+    B-tree indexing - usually used for == and >= , <= range queries
+
+    CREATE INDEX index_name ON table_name USING HASH (column_name );
+    Hash indexing - usually used for == 
+
+   CREATE INDEX index_name ON table_name USING HASH (column_name);
+    GIN indexing - Used for array, JSONB, full-text search
 
 28: How partitioning is done?
     CREATE TABLE sales (
