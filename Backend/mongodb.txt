@@ -459,6 +459,7 @@ Atomicity in mongodb?
 what is indexing and types of indexing
 //)command for getIndex and createIndex for all types
 //)search youtube in the documents where age is greater than 12 and also expires index after sometime 
+  db.collection.find({$text: { $search: "Node.js tutorial" }})
 //)collection gets blocked if index starts getting created make it unblock
 ------------------------------------------------
 ->Data Modeling:
