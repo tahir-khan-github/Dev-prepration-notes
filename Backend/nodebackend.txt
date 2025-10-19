@@ -30,7 +30,6 @@
 
 9)what is singlethreaded programming
     it executes tasks one at a time in a sequential manner, using one call stack and one memory heap
-    Code is executed one instruction after another, in the exact order it's written. 
 
 9.1)if node js single threaded then how nodejs handles multiple task at once
     it takes all the request in the event queue and an event loop is watching over it, the event loop takes out request in FIFO and checks
@@ -109,8 +108,8 @@
     path.resolve('users', 'admin', 'documents', 'file.txt');// absolute path from root '/' is given it will start from here
 
 12.2)what is os module
-        os.platform()
-        os.arch()
+        os.platform()   //gives Operating system
+        os.arch() //gives cpu architectur
 
 12.3)what is http module
         http module allows you to create an HTTP server that can listen for and respond to HTTP requests.
@@ -132,7 +131,7 @@
             res.end(JSON.stringyfy(items));
         }else if(req.method === 'POST' && req.url === '/items'){
             let body = '';
-            req.on("data", (chunk) => data += chunk);
+            req.on("data", (chunk) => body += chunk);
             req.on("end", ()=>{
                 const item = {id: 1, name: "abcd"};
                 items.push(item);
@@ -141,7 +140,7 @@
         }else if(req.method === 'PUT'  && req.url.startsWith(/items/)){
             const id = req.url.split("/")[2]
             let body = '';
-            req.on("data", (chunk) => data += chunk);
+            = chunk);
             req.on("end", ()=>{
                const index = items.filter((i) => i.id === id);
                if(index != -1){
@@ -165,7 +164,28 @@
     An IP address (Internet Protocol address) is a unique identifier assigned to each device connected to a network
      const ipAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
+16)What are the advantages of using promises instead of callbacks?
+    The main advantage of using promise is you get an object to decide the action that needs to be taken after the async task completes. 
+    This gives more manageable code and avoids callback hell
 
+17)Difference b/w setTimeOut() and setImmediate() and process.nextTick()?
+    all of them are asynchronous functions that register callbacks into queues to run later
+    event loop will check and execute it using thread pool, but setTimeOut callback has higher priority so it will execute first
+    and process.nextTick() callback will start before every event loop starts
+
+    setImmediate() // check queue
+    setTimeOut() //timer queue
+    
+18)What are streams in Node.js?
+    Streams in Node.js are objects that allow you to read or write data continuously It handles large amount of data without loading all into memory
+    const readStream = fs.createReadStream('filename', format);
+    readStream.on('data', (chunk)=>{
+        console.log(chunk)
+    })
+
+19)Explain how clustering works in Node.js?
+    Clustering in Node.js refers to the process of creating multiple instances of the Node.js process, known as worker processes, 
+     to take advantage of multi-core systems and distribute the workload across multiple CPU cores. 
 ---------------------Rest Api------------------
 1)what is an api?
    api is a set of rules that allows different software applications to communicate with each other
@@ -205,93 +225,17 @@
 
 
 2)how error handling is done?
-    error handle is done using error middleware, and from any point of code we return next()with error which goes to error middlware
-    return next(new ErrorHandler(404,"not found"))
-
-    class ErrorHandler extends Error{
-        constructer(message, statusCode){
-            super(message) //message is passed to Error class(parent of ErrorHandler class) via super (constructer of parent class)
-            this.statusCode = statusCode;
-        }
-    }
-
-    const errorMiddleware = (err, req, res, next) => {
-
-    err.message ||= "Internal server error";
-    err.statusCode ||= 500;
-    // add conditions to handler other error
-    const response = {
-        success: false,
-        message: err.message
-    }
-
-    //add conditions to handle response based on  environment
-
-    return res.status(err.statusCode).json(response)
-};
+  using try catch or next() in express
 
 
 3)how authentication is done?
-    authentication is done using jsonwebtoken and cookies ,at the time of registering user we create a token using jwt.sign and sends it to client in the cookie
-    
-    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET); //jwt.sign will create a token with payload as { _id: user._id } and will be signed using secret
+    HLD
 
-    const cookieOptions = {
-        expires: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000), // 15 days
-        httpOnly: true, // This ensures the cookie is only accessible by the web server
-        sameSite: 'none', // Ensure this matches your front-end and back-end setup, especially if using cross-site requests
-        secure: true // Make sure this is true only in production
-    }
-    
-    return res.status(code).cookie("chat-token", token, cookieOptions).json({
-        success: true,
-        message,
-    });
-
-    
-    here a middleware is created to allow only users to access certain routes, 
-    if its logged in then get token from cookie and if token exist then decode _id add existing user to req.user and add this middleware before routes which required access
-
-    const isAuthenticated = (req, res, next)=>{
-    const token = req.cookies["chat-token"];
-
-    if(!token) return next(new ErrorHandler(401, "Login first"));
-
-    const decoded = jwt.verify(token,process.env.JWT_SECRET); //decodes the token and checks its signature against the secret key, if success then returns the payload
-
-    req.user = decoded._id;
-
-
-    next();
-    }
-
-
-4)express api?
-
-app.js(parent route) -> routes(return router have all route related to course) -> controller(actual operation on that route)
-
-app.use("/api/v1", course);
-
-const router = express.Router();
-router
-  .route("/createcourse")
-  .post(isAuthenticated, singleUpload, crearteCourse);
-
-5)role of next() in express
+4)role of next() in express
     next() will move the working to flow to the next handler
     if some argument is passed then flow moves to matching handler
     inorder to handle error we return next() with error class
 
-6)Multer is used to access files in req.files
-    by default it uses ram
-    const multerUpload = multer({ 
-        limits:{
-            fileSize: 1024 * 1024 * 5,
-        }
-    });
-
-    const singleAvatar = multerUpload.single("avatar");
-    const attachmentMlter = multerUpload.array("files",5);    
 
 
 
