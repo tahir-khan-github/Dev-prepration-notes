@@ -468,10 +468,9 @@ what is indexing and types of indexing
 ------------------------------------------------
 
 //1)Students who have experience in amazon ?
-//2)find students whose hobbies are walk and play  ? $all -  to check the all values in array
-//3)how many students who are working in amazon and has salary greater than 1001 ? // $elemMatch - to check object in an array
+//2)find students whose hobbies are walk and play  ? 
+//3)how many students who are working in amazon and has salary greater than 1001 ? 
 
-$.filed - single object, $[].field - all objects in array, $[e].filed selected objects
 //4)for all having  duration than 2 add new field neglect:true to first matched element
 //4.1)add new field neglect:false to all element of experience array
 //4.2)for all having duration lesser than 2 add new field accept:true 
@@ -495,5 +494,5 @@ Aggregation pipeline($group, $match, $lookup, $project)
 //17)capped query
 //18)Replication
 //19)Sharding
-//20)Which DB to use when
+//20)Which DB to use when (HLD)
 ------------------------------------------------------
