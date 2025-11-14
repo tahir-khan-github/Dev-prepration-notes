@@ -64,6 +64,16 @@ var fun = function(){
 fun();
 
 //parm = rest  vs  args = spread
+//Rest Collects remaining arguments/properties into an array or object. Used in function parameters and destructuring.
+function sum(...args){
+    return args.reduce((acc, curr)=>acc + curr, 0);
+}
+sum(1,2,3) //converts to [1,2,3]
+//Spread Expands an array or object into individual elements.Used to copy, merge, or pass array elements as arguments.
+const arr1 = [1,2,3];
+const arr2 = [...arr1, 4]  // [1,2,3,4]
+
+
 function mul(...arr){ //res  parameters needs to be last in declaration
     console.log(arr);
 }

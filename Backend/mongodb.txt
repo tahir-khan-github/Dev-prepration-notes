@@ -258,6 +258,7 @@ db.collection.aggregate(pipeline) pipeline - array of different operations
 2)$group
 3)$project
 4)$lookup
+5)$sort
 
 
 db.collection.aggregate([ {$match:{ gender: "male" }} ]) return document with gender as male
@@ -471,7 +472,7 @@ what is indexing and types of indexing
 //2)find students whose hobbies are walk and play  ? 
 //3)how many students who are working in amazon and has salary greater than 1001 ? 
 
-//4)for all having  duration than 2 add new field neglect:true to first matched element
+//4)for all having  duration less than 2 add new field neglect:true to first matched element
 //4.1)add new field neglect:false to all element of experience array
 //4.2)for all having duration lesser than 2 add new field accept:true 
 
@@ -496,3 +497,21 @@ Aggregation pipeline($group, $match, $lookup, $project)
 //19)Sharding
 //20)Which DB to use when (HLD)
 ------------------------------------------------------
+db connection
+
+const {MongoClient} = require("mongodb");
+
+const uri = "mongodb:localhost:27..."
+const client =  new MongoClient(uri);
+
+async function connectDb(){
+  try{
+    await client.connect();
+    console.log("db connected successfully")
+    const db = client.db("testDb")
+
+    const user = db.collection("user")
+  }catch(err){
+
+  }
+}

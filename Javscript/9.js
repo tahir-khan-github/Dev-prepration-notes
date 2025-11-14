@@ -180,7 +180,7 @@ const promise3 = Promise((resolve, reject)=>{
     console.log(3)                                                                                                                         //synchronus
 })
 
-promise1.then((res)=>{ // it will not come to this block because resolve is not provided
+promise3.then((res)=>{ // it will not come to this block because resolve is not provided
     console.log(res)
 }).catch((err)=>{
     console.log(err)

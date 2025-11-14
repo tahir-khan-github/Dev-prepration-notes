@@ -10,7 +10,7 @@ Container: A Docker container is a lightweight and isolated runtime environment 
 -Deployment Before and After Docker
 
 Before:
-Deployment = developers creates artifacts files(zip, jar) contianing code, config and dependencies and upload at artifact repository.
+Deployment = developers creates artifacts files(zip, jar) contianing code, config and dependencies and upload it at artifact repository.
 Ops team had to download artifact files and configure servers for each app. which will also create problem due to dependency conflicts e.t.c
  
 After Docker:
@@ -81,6 +81,36 @@ The amount of containers that may be run under Docker has no explicitly specifie
 
 Dockerfile can be optmized by using smaller base image, using multi-stage builds to exclude unnecessary files from the final image.  
 multi-stage build can be done using multiple FROM each representing a different build stage and intermediate build artifacts can be copied between stages using the COPY --from
+FROM node-18.0.0-alpine AS Builder
+
+COPY package.json /app
+copy . .
+
+WORKDIR /app
+
+RUN npm install
+RUN npm run Builder
+
+FROM node-18.0.0-alpine
+
+COPY --from=Builder /app/dist ./dist
+COPY --from=Builder /app/package.json ./
+
+WORKDIR /app
+
+CMD ["node", "/app/index.js"]
+
+When you update a Docker container, the default behavior is to remove and recreate it 
+— meaning any data stored inside the container is lost unless you take precautions.
+
+Using volumes
+Volumes store data on the host machine, independent of the container’s lifecycle.
+docker volume create mydata
+
+docker run -d \
+  --name myapp \
+  -v mydata:/app/data \
+  myimage:latest
 
 
 Teraform:
@@ -91,6 +121,8 @@ Terraform lets you write code that describes your infrastructure, and then it au
 Interview Questons:
 
 Why we use docker?
+We use Docker to make building, running, and deploying applications simpler, faster, and more consistent
+
 diff b/w docker container and virtual machines?
 how to remove unsused docker contianer?
 how to store persistent data in docker container?
@@ -117,8 +149,6 @@ CI - Continous integration
 
 Architecture of gitlab:
 -it contains the GitLab Server & GitLab Runner
--GitLab server manages the execution of the pipeline and its jobs and stores the results
--when a job needs to be executed, the GitLab server will find a runner to run the job, there can be multiple runners to distrubute the load
 flow :
 -the GitLab server locates a GitLab Runner and sends instructions for running the job
 -GitLab Runner will pull the Docker image specified in the job configuration 
@@ -341,10 +371,19 @@ Interview questions:
 what is ci/cd?
 what is the Architecture of gitlab?
 how we write pipeline in gitlab?
+
 how to deploy manually?
+when: manual 
+
 how store the result of job?
+ artifacts:                                 
+        paths:
+            - build
+
 how can we limit pipeline to trigger only on default branch, how to trigger pipeline manually?
-how can we build our own docker image and send it to aws?
+ rules:
+        - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+
 
 -------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -382,7 +421,7 @@ create EC2 instance, attach awsagent IAM role(gives permission to agent to send 
 AWS lambda:
 its a serverless service, we just execute our code without thinking about server
 create lambda, attach role, write and deploy code
-event is an lambda object which has all the information, its details will be based on the api call
+event is a lambda object which has all the information, its details will be based on the api call
 hot and cold start:
 when lambda function starts for the first time it creates and starts an execution environment(takes time) & executes code(cold start)
 later on when other events happens it runs it in the same execution environment to save time (hot start)

@@ -60,6 +60,21 @@
     Synchronous operations are those that are executed sequentially.
     Asynchronous operations allow tasks to be executed without blocking the execution of other tasks
 
+9.7)what is event loop?
+    whenever code executes it goes to event queue and event loop watching over it pull out the request and checks wether its a synchronus or asynchronous
+    if synchronus its executes it right away.
+    if asynchronous then it send the request to thread pool where a thread is assigned to it for execution of request.
+
+9.8)microtask queue vs macrotask queue?
+    event loop will send promises to microtask queue which has higher priority to be executed after synchronus completed from callstack
+    event loop will send fs module code and setTimeOut code will go to macrotask queue , again setTimeOut will get executed first
+
+9.9)how nodejs handles asynchronous task?
+    it handles it using
+    1)callbacks
+    2)promises with then and catch
+    3)async await better than promises
+
 10)what is npm and node_modules, package json
     npm (Node Package Manager) is a package manager containing libraries which we use in our nodejs code
     a directory that stores all the installed packages and their dependencies for a project
@@ -90,15 +105,19 @@
     import pi, { add, subtract, multiply } from './math.mjs';
     we can rename default export while importing
 
+11.2)diifference between require and import
+    require - its used in commonJs modules (with module.exports), Synchronous execution.
+    import - its used on ES modules (with export) , synchronus and asynchronous execution.
 
-
-12)what is fs module
+12)what is fs module and where does it run
     fs.readFile(file, format, (err, data) => {})
     const data = fs.readFileSync('example.txt', 'utf8');
     fs.writeFile(file, content, (err) => {})
     fs.writeFileSync(file, content)
     fs.appendFile(file, content, (err) => {})
     fs.unlink('example.txt', (err) => {})
+
+    async functions runs on thread pool and synchronus works on main thread
 
 12.1)what is path module
     path.basename(filePath); //last portion of a path (the file name).
@@ -183,9 +202,37 @@
         console.log(chunk)
     })
 
-19)Explain how clustering works in Node.js?
-    Clustering in Node.js refers to the process of creating multiple instances of the Node.js process, known as worker processes, 
+19)Explain how clustering works in Node.js and when should be it used?
+    Clustering in Node.js refers to the process of creating multiple instances of the Node.js process, known as worker processes that shares the same server port, 
      to take advantage of multi-core systems and distribute the workload across multiple CPU cores. 
+
+20)how to secure nodejs application?
+    1)Use https
+    2)Valdiate input
+    3)implement security headers
+    4)sanatize user input
+
+21)how do you manage environment variables in nodejs
+    require(dotenv).config();
+    console.log(process.env.variable_name)
+    it loads env variables from .env file into process.env , preventing hardcoded credentials
+
+22)what are worker threads in nodejs and how they improve performance?
+    worker threads allow nodejs to execute cpu intensive tasks in seprate threads, preventing event loop from blocking
+
+23)If Node.js is single threaded then how does it handle concurrency?
+    Due to many reason:
+    > Event loop
+    > Asynchronous Operations
+    > Libuv and the Thread Pool for blocking operations (libuv sends these tasks to a thread pool (default size = 4 threads)
+    > Worker Threads (runs code on sepreate thread)
+
+24) child process and its functions?
+    Nodejs provides child process module to run scripts outside the main event loop, in a separate system process.
+    spawn() is Use when you want to run a command continuously and stream data.
+    fork() is Specifically used to create a new Node.js process.
+    exec() Runs a command and buffers the entire output in memory 
+
 ---------------------Rest Api------------------
 1)what is an api?
    api is a set of rules that allows different software applications to communicate with each other
@@ -236,8 +283,42 @@
     if some argument is passed then flow moves to matching handler
     inorder to handle error we return next() with error class
 
+5)microservice Architecture?
+    HLD
+
+6)How to scale app for more user?
+    HLD
+
+7)How nodejs load using requrie and import?
+When you call require() in Node.js, it first resolves the file path ,
+then loads and wraps the module code inside a function for scoping. The module is executed once,
+its exports are returned,
+and it’s cached in require.cache for future calls.
+This mechanism is part of Node’s CommonJS module system.
 
 
+8)typescript with design principle and oops
+    LLD
 
 
+9)error handling in nodejs
 
+app.use(async (req, res, next) => {
+  try {
+    // Some async code
+    const data = await fetchData();
+    res.send(data);
+  } catch (err) {
+    next(err); // Pass to error middleware
+  }
+});
+
+// Centralized error handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: 'Something went wrong!' });
+});
+
+10)What are “uncaught exceptions” and “unhandled promise rejections”?
+    Uncaught Exception: Synchronous error not caught anywhere
+    Unhandled Rejection: A rejected promise without .catch()
